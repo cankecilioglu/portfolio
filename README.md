@@ -13,18 +13,12 @@ with a heat-gradient rule.
 
 ---
 
-## ✅ Before you launch — confirm these
+## Contact details
 
-One public-facing detail still needs your input — it lives in **`src/consts.ts`**:
-
-| Field              | Current value                               | Action                        |
-| ------------------ | ------------------------------------------- | ----------------------------- |
-| `CONTACT.linkedin` | `https://www.linkedin.com/in/cankecilioglu` | Paste your real LinkedIn URL. |
-
-`CONTACT.email` is set to `cankecilioglu@gmail.com`. Change anything in
-`src/consts.ts` and it updates across the contact page, footer, about page, and
-structured data. If you change your name/headline, regenerate the social card with
-`npm run gen:assets`.
+All contact details are configured in **`src/consts.ts`** — `email`
+(`cankecilioglu@gmail.com`), `linkedin`, and `github`. Change anything there and it
+updates across the contact page, footer, about page, and structured data. If you
+change your name/headline, regenerate the social card with `npm run gen:assets`.
 
 ---
 

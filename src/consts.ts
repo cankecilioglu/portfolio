@@ -1,9 +1,5 @@
 /**
- * Central site configuration.
- *
- * ── TODO before launch ──────────────────────────────────────────────
- *  CONTACT.linkedin  → paste your real LinkedIn profile URL.
- * ────────────────────────────────────────────────────────────────────
+ * Central site configuration — name, URLs, contact details, and nav.
  */
 
 export const SITE = {
@@ -24,8 +20,7 @@ export const CONTACT = {
   email: 'cankecilioglu@gmail.com',
   github: 'https://github.com/cankecilioglu',
   githubHandle: 'github.com/cankecilioglu',
-  // TODO: replace with your real LinkedIn URL.
-  linkedin: 'https://www.linkedin.com/in/cankecilioglu',
+  linkedin: 'https://www.linkedin.com/in/can-kecilioglu/',
   linkedinLabel: 'LinkedIn',
 } as const;
 
