@@ -5,39 +5,122 @@ import Eyebrow from '../components/Eyebrow.astro';
 import { CONTACT } from '../consts';
 import portrait from '../assets/can-portrait.jpg';
 
-const facts = [
-  { label: 'Focus', value: 'Perception · sensor fusion · embedded systems' },
-  { label: 'Stack', value: 'ROS2 · micro-ROS · C/C++ · ESP32 · Raspberry Pi · EKF' },
-  { label: 'Now', value: 'Final year at TAÜ · open to robotics roles' },
+const quickFacts = [
+  { label: 'Focus', value: 'Autonomous systems · perception · embedded' },
+  { label: 'Now', value: 'Software Lead @ TAC · Process Eng @ Bosch' },
+  { label: 'Based', value: 'İstanbul / Bursa, Türkiye' },
+];
+
+const experience = [
+  {
+    role: 'Process Development Engineer',
+    org: 'Bosch — Powertrain Solutions',
+    date: '2026 — Present',
+    desc: 'Industry-4.0 process engineering on high-precision diesel-injection lines in Bursa: machine-data analysis (spindle load, vibration) for predictive maintenance, SPC/Cpk for micron tolerances, and OEE / cycle-time optimization with shopfloor root-cause work.',
+  },
+  {
+    role: 'Software Team Lead',
+    org: 'TAC — TGU Autonomous Car',
+    date: '2025 — Present',
+    desc: 'Lead the software division of a TEKNOFEST-finalist self-driving vehicle. Own the ROS2 architecture and build perception (YOLO, LaneNet, OpenCV), sensor fusion (LiDAR / camera / IMU), SLAM and path planning — running in real time on embedded Linux + NVIDIA Jetson. Run code reviews and mentor the team.',
+  },
+  {
+    role: 'Autonomous Driving Software Engineer',
+    org: 'TAC — TGU Autonomous Car',
+    date: '2023 — 2025',
+    desc: 'Built mapping, odometry, motion control and navigation in ROS2; sensor integration and data processing for autonomous driving in C++ / Python on Linux.',
+  },
+  {
+    role: 'Trainee Engineer',
+    org: 'Bosch Mobility Training Program',
+    date: '2025',
+    desc: 'In-depth Bosch program on vehicle architectures, engine technologies, calibration and electric / hybrid systems.',
+  },
+  {
+    role: 'Industrial Automation Trainee',
+    org: 'Üsküdar Innovation Center',
+    date: '2025',
+    desc: 'Hands-on PLC programming and industrial automation with Siemens TIA Portal; pneumatic system design.',
+  },
+  {
+    role: 'Project Management & Software Trainee',
+    org: 'Google Game & Application Academy',
+    date: '2023 — 2024',
+    desc: 'Agile / Scrum project management (Google PM certificate) and software / game development with C# / .NET and Unity.',
+  },
+];
+
+const education = [
+  {
+    school: 'Turkish-German University (TGU)',
+    detail: 'B.Sc. Mechatronics Engineering · GPA 3.2',
+    date: '2023 — 2027',
+    note: 'Coursework across robotics, control systems, computer science and statistics. Partly German-instructed.',
+  },
+  {
+    school: 'Maltepe Science High School',
+    detail: 'Science track',
+    date: '— 2020',
+    note: null,
+  },
+];
+
+const languages = [
+  { lang: 'Turkish', level: 'Native' },
+  { lang: 'German', level: 'C1 · TestDaF' },
+  { lang: 'English', level: 'Advanced' },
+];
+
+const skillGroups = [
+  { label: 'Robotics & autonomy', items: ['ROS2', 'SLAM', 'Odometry', 'Path planning', 'Navigation'] },
+  { label: 'AI & computer vision', items: ['YOLO', 'LaneNet', 'CNNs', 'OpenCV', 'Deep learning'] },
+  { label: 'Sensor fusion', items: ['LiDAR', 'Camera', 'IMU', 'GPS', 'EKF'] },
+  { label: 'Programming', items: ['C / C++', 'Python', 'C# / .NET', 'OOP'] },
+  { label: 'Embedded & systems', items: ['Embedded Linux', 'NVIDIA Jetson', 'Microcontrollers', 'Real-time'] },
+  { label: 'Industrial & data', items: ['PLC · Siemens TIA', 'SPC / Cpk', 'OEE', 'Industry 4.0'] },
+];
+
+const certs = [
+  { name: 'Autonomous Driving Technologies', org: 'Ministry of Industry & Technology', year: '2026' },
+  { name: 'TEKNOFEST Achievement Certificate', org: 'TEKNOFEST', year: '2025' },
+  { name: 'TestDaF — German C1', org: 'g.a.s.t.', year: '2023' },
+  { name: 'Bosch Mobility Training Program', org: 'Bosch', year: '2025' },
+  { name: 'PLC Programming', org: 'Üsküdar Innovation Center', year: '2025' },
+  { name: 'Project Management', org: 'Google · Coursera', year: '2023' },
 ];
 ---
 
 <BaseLayout
   title="About"
-  description="Can Keçilioğlu — final-year mechatronics engineer at the Turkish-German University, working on the perception, fusion and firmware that let robots act on sensor data."
+  description="Can Keçilioğlu — mechatronics engineer and software team lead on a TEKNOFEST-finalist autonomous vehicle. Robotics, computer vision, sensor fusion and embedded systems."
 >
   <section class="wrap page-head">
     <div class="reveal">
       <Eyebrow>About</Eyebrow>
-      <h1 class="display-1 page-title">Robotics, from the sensor up.</h1>
+      <h1 class="display-1 page-title">From sensors to self-driving.</h1>
     </div>
   </section>
 
-  <section class="wrap about-body">
+  {/* INTRO + PORTRAIT */}
+  <section class="wrap about-intro">
     <div class="about-copy reveal">
       <p>
-        I&rsquo;m Can Keçilioğlu, a final-year mechatronics engineering student at the
-        Turkish-German University (TAÜ). I work on the software and firmware that turn a robot&rsquo;s
-        raw sensor data into decisions it can act on.
+        I&rsquo;m Can Keçilioğlu, a mechatronics engineering student at the Turkish-German University
+        (TGU) and the software team lead of <strong>TAC</strong>, our university&rsquo;s autonomous
+        vehicle team and a TEKNOFEST finalist. I work where embedded robotics meets AI — building the
+        software that lets a vehicle perceive its surroundings and drive itself.
       </p>
       <p>
-        My focus is perception, sensor fusion and embedded systems — the layer where a noisy reading
-        on a microcontroller becomes a state estimate the rest of the stack can trust. I&rsquo;m most
-        effective where hardware, firmware and higher-level software meet.
+        On the car I lead a ROS2-based stack: perception with YOLO and LaneNet, sensor fusion across
+        LiDAR, camera and IMU, SLAM and path planning, all running in real time on embedded Linux and
+        NVIDIA Jetson. Lately I&rsquo;ve been going deeper into deep learning to push the perception
+        and decision-making further.
       </p>
       <p>
-        I care about the unglamorous parts: clean timing, honest error handling and systems that hold
-        up outside the demo. If that&rsquo;s the kind of engineering you value, we&rsquo;ll get along.
+        Alongside the team I&rsquo;m a process development engineer at Bosch&rsquo;s powertrain plant
+        in Bursa, on the data and Industry-4.0 side of high-precision manufacturing. I like problems
+        that span software, hardware and the real world — and I care about systems that hold up
+        outside the demo.
       </p>
     </div>
 
@@ -45,10 +128,9 @@ const facts = [
       <figure class="portrait">
         <Image src={portrait} alt="Can Keçilioğlu" width={760} class="portrait-img" />
       </figure>
-
       <dl class="facts">
         {
-          facts.map((f) => (
+          quickFacts.map((f) => (
             <div class="facts-row">
               <dt>{f.label}</dt>
               <dd>{f.value}</dd>
@@ -68,18 +150,118 @@ const facts = [
       </dl>
     </aside>
   </section>
+
+  {/* EXPERIENCE */}
+  <section class="wrap about-block">
+    <div class="reveal">
+      <Eyebrow class="block-label">Experience</Eyebrow>
+      <ol class="timeline">
+        {
+          experience.map((e) => (
+            <li class="exp">
+              <div class="exp-top">
+                <p class="exp-head">
+                  <span class="exp-role">{e.role}</span>
+                  <span class="exp-org">{e.org}</span>
+                </p>
+                <span class="exp-date">{e.date}</span>
+              </div>
+              <p class="exp-desc">{e.desc}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {/* EDUCATION + LANGUAGES */}
+  <section class="wrap about-block">
+    <div class="edu-grid reveal">
+      <div>
+        <Eyebrow class="block-label">Education</Eyebrow>
+        <ol class="timeline">
+          {
+            education.map((e) => (
+              <li class="exp">
+                <div class="exp-top">
+                  <p class="exp-head">
+                    <span class="exp-role">{e.school}</span>
+                    <span class="exp-org">{e.detail}</span>
+                  </p>
+                  <span class="exp-date">{e.date}</span>
+                </div>
+                {e.note && <p class="exp-desc">{e.note}</p>}
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <div>
+        <Eyebrow class="block-label">Languages</Eyebrow>
+        <dl class="lang-list">
+          {
+            languages.map((l) => (
+              <div class="lang-row">
+                <dt>{l.lang}</dt>
+                <dd>{l.level}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  {/* SKILLS */}
+  <section class="wrap about-block">
+    <div class="reveal">
+      <Eyebrow class="block-label">Skills</Eyebrow>
+      <div class="skills-grid">
+        {
+          skillGroups.map((g) => (
+            <div class="skill-group">
+              <p class="skill-label">{g.label}</p>
+              <ul class="chips">
+                {g.items.map((s) => (
+                  <li class="chip">{s}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* CERTIFICATIONS */}
+  <section class="wrap about-block about-block-last">
+    <div class="reveal">
+      <Eyebrow class="block-label">Certifications</Eyebrow>
+      <ul class="certs">
+        {
+          certs.map((c) => (
+            <li class="cert">
+              <span class="cert-name">{c.name}</span>
+              <span class="cert-meta">
+                {c.org} · {c.year}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .about-body {
-    padding-bottom: clamp(4rem, 2.5rem + 6vw, 7rem);
+  .about-intro {
     margin-top: clamp(2rem, 1.4rem + 2.5vw, 3rem);
     display: grid;
     gap: clamp(2.5rem, 1.5rem + 4vw, 4rem);
     grid-template-columns: 1fr;
   }
   @media (min-width: 900px) {
-    .about-body { grid-template-columns: minmax(0, 1fr) 20rem; align-items: start; }
+    .about-intro { grid-template-columns: minmax(0, 1fr) 20rem; align-items: start; }
   }
   .about-copy {
     font-size: 1.0625rem;
@@ -88,11 +270,9 @@ const facts = [
     max-width: 62ch;
   }
   .about-copy > p + p { margin-top: 1.2em; }
+  .about-copy strong { color: var(--fg); font-weight: 700; }
 
-  .about-side {
-    display: grid;
-    gap: 1.25rem;
-  }
+  .about-side { display: grid; gap: 1.25rem; }
   .portrait {
     margin: 0;
     aspect-ratio: 4 / 5;
@@ -101,13 +281,7 @@ const facts = [
     overflow: hidden;
     background: var(--card);
   }
-  .portrait-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 22%;
-    display: block;
-  }
+  .portrait-img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; display: block; }
 
   .facts {
     margin: 0;
@@ -118,30 +292,59 @@ const facts = [
     display: grid;
     gap: 1.05rem;
   }
-  .facts-row {
-    display: grid;
-    gap: 0.3rem;
-    padding-bottom: 1.05rem;
-    border-bottom: 1px solid var(--line);
-  }
+  .facts-row { display: grid; gap: 0.3rem; padding-bottom: 1.05rem; border-bottom: 1px solid var(--line); }
   .facts-row:last-child { padding-bottom: 0; border-bottom: 0; }
-  .facts-row dt {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
+  .facts-row dt { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+  .facts-row dd { margin: 0; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.6; color: var(--fg); }
+  .facts-row dd a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* Blocks */
+  .about-block { margin-top: clamp(3.5rem, 2.5rem + 4vw, 5.5rem); }
+  .about-block-last { padding-bottom: clamp(4rem, 2.5rem + 6vw, 7rem); }
+  .block-label { margin-bottom: 1.75rem; }
+
+  /* Timeline (experience / education) */
+  .timeline { list-style: none; margin: 0; padding: 0; }
+  .exp { padding: 1.5rem 0; border-top: 1px solid var(--line); }
+  .exp:first-child { border-top: 0; padding-top: 0; }
+  .exp-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem 1.5rem; flex-wrap: wrap; }
+  .exp-head { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.7rem; }
+  .exp-role { font-weight: 700; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--fg); }
+  .exp-org { color: var(--accent); font-size: 0.95rem; }
+  .exp-date { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .exp-desc { margin: 0.6rem 0 0; color: var(--muted); line-height: 1.65; max-width: 70ch; }
+
+  .edu-grid { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 3.5rem); grid-template-columns: 1fr; }
+  @media (min-width: 820px) {
+    .edu-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
   }
-  .facts-row dd {
-    margin: 0;
+  .lang-list { margin: 0; display: grid; gap: 0; }
+  .lang-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.9rem 0; border-top: 1px solid var(--line); }
+  .lang-row:first-child { border-top: 0; padding-top: 0; }
+  .lang-row dt { font-weight: 600; color: var(--fg); }
+  .lang-row dd { margin: 0; font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
+
+  /* Skills */
+  .skills-grid { display: grid; gap: 1.75rem 2.5rem; grid-template-columns: 1fr; }
+  @media (min-width: 680px) { .skills-grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1040px) { .skills-grid { grid-template-columns: repeat(3, 1fr); } }
+  .skill-group { display: grid; gap: 0.7rem; align-content: start; }
+  .skill-label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; margin: 0; padding: 0; }
+  .chip {
     font-family: var(--font-mono);
-    font-size: 0.82rem;
-    line-height: 1.6;
+    font-size: 0.74rem;
     color: var(--fg);
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--card);
   }
-  .facts-row dd a {
-    color: var(--accent);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
+
+  /* Certifications */
+  .certs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .cert { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem 1.5rem; flex-wrap: wrap; padding: 1rem 0; border-top: 1px solid var(--line); }
+  .cert:first-child { border-top: 0; padding-top: 0; }
+  .cert-name { font-weight: 600; color: var(--fg); }
+  .cert-meta { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.04em; color: var(--muted); }
 </style>

@@ -10,10 +10,10 @@ export const SITE = {
   /** Canonical origin (no trailing slash). Mirrors `site` in astro.config. */
   url: 'https://cankecilioglu.dev',
   /** One-line positioning, used as the default meta description tail. */
-  role: 'Robotics perception & embedded engineer',
+  role: 'Robotics, AI & embedded engineer',
   /** Default meta description for pages that do not set their own. */
   description:
-    'Can Keçilioğlu — robotics perception & embedded engineer. From a raw sensor reading on bare-metal firmware to a coherent world model a robot can act on.',
+    'Can Keçilioğlu — mechatronics engineer building autonomous systems. Software Team Lead on a TEKNOFEST-finalist self-driving vehicle: ROS2, computer vision, sensor fusion and embedded software.',
 } as const;
 
 export const CONTACT = {

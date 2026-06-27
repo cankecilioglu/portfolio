@@ -15,42 +15,44 @@ const featured = projects.slice(0, 2);
 
 const marquee = [
   'ROS2',
-  'micro-ROS',
+  'Computer Vision',
+  'YOLO',
+  'LaneNet',
+  'SLAM',
   'Sensor Fusion',
-  'EKF',
+  'LiDAR',
   'C / C++',
-  'ESP32',
-  'Raspberry Pi',
-  'Embedded Firmware',
-  'Real-time Systems',
-  'State Estimation',
+  'Python',
+  'NVIDIA Jetson',
+  'Embedded Linux',
+  'Path Planning',
 ];
 
 const capabilities = [
   {
     n: '01',
-    title: 'Perception & sensor fusion',
-    body: 'Turning noisy IMU, GPS and range data into clean, trustworthy state — with filters like the EKF at the core.',
+    title: 'Autonomous software & ROS2',
+    body: 'Scalable ROS2 architectures for self-driving — mapping, odometry, motion control and navigation.',
   },
   {
     n: '02',
-    title: 'Embedded & firmware',
-    body: 'Bare-metal C/C++ on microcontrollers, deterministic sampling, and bridging hardware into ROS2 over micro-ROS.',
+    title: 'Perception & computer vision',
+    body: 'Camera and LiDAR perception with YOLO, LaneNet and OpenCV — turning raw frames into decisions.',
   },
   {
     n: '03',
-    title: 'Systems & integration',
-    body: 'Designing the whole path — sensor to estimate to world model — and making the seams between them reliable.',
+    title: 'Sensor fusion & embedded',
+    body: 'Fusing LiDAR, camera and IMU for localization; real-time C++/Python on Linux and NVIDIA Jetson.',
   },
 ];
 
-const heroCode = `<span class="tok-com">// raw sensor → state → world model</span>
+const heroCode = `<span class="tok-com">// camera frame → detections → driving decision</span>
 <span class="tok-key">while</span> (rclcpp::<span class="tok-fn">ok</span>()) {
-  <span class="tok-key">auto</span> imu = imu_sub.<span class="tok-fn">read</span>();   <span class="tok-com">// 200 Hz, noisy</span>
-  ekf.<span class="tok-fn">predict</span>(imu, dt);
-  <span class="tok-key">if</span> (<span class="tok-key">auto</span> gps = gps_sub.<span class="tok-fn">poll</span>())
-    ekf.<span class="tok-fn">update</span>(*gps);        <span class="tok-com">// 10 Hz, absolute</span>
-  <span class="tok-fn">publish</span>(ekf.<span class="tok-fn">state</span>());        <span class="tok-com">// a pose you can trust</span>
+  <span class="tok-key">auto</span> frame   = camera.<span class="tok-fn">read</span>();          <span class="tok-com">// 30 FPS</span>
+  <span class="tok-key">auto</span> objects = yolo.<span class="tok-fn">detect</span>(frame);     <span class="tok-com">// cars · signs · people</span>
+  <span class="tok-key">auto</span> lanes   = lanenet.<span class="tok-fn">segment</span>(frame);
+  <span class="tok-key">auto</span> state   = ekf.<span class="tok-fn">fuse</span>(lidar, imu, gps);  <span class="tok-com">// localize</span>
+  planner.<span class="tok-fn">update</span>(objects, lanes, state); <span class="tok-com">// plan & drive</span>
 }`;
 ---
 
@@ -59,22 +61,22 @@ const heroCode = `<span class="tok-com">// raw sensor → state → world model<
   <section class="hero">
     <div class="wrap hero-grid">
       <div class="hero-content reveal">
-        <Badge dot>Available for robotics roles</Badge>
+        <Badge dot>Open to robotics &amp; AI roles</Badge>
         <h1 class="display-1 hero-name">Can Keçilioğlu</h1>
         <p class="hero-role display-3">
           Building <TypedRole
             roles={[
-              'perception systems',
-              'embedded firmware',
-              'sensor-fusion pipelines',
-              'real-time world models',
+              'autonomous systems',
+              'perception pipelines',
+              'computer-vision models',
+              'self-driving software',
             ]}
           />
         </p>
         <p class="lede hero-lede">
-          Final-year mechatronics engineer focused on the software and firmware that lets robots
-          sense, estimate and act — from bare-metal sensor drivers to the state estimation a system
-          can plan on.
+          Mechatronics engineer and software team lead on a TEKNOFEST-finalist self-driving vehicle.
+          I build the perception, sensor-fusion and embedded software that lets machines see, decide
+          and move — now sharpening the AI side with YOLO, LaneNet and deep learning.
         </p>
         <div class="hero-cta">
           <ArrowLink href="/work" variant="primary">View work</ArrowLink>
