@@ -1,0 +1,83 @@
+---
+import { SITE, CONTACT } from '../consts';
+
+const year = new Date().getFullYear();
+
+const links = [
+  { label: 'GitHub', href: CONTACT.github, external: true },
+  { label: CONTACT.linkedinLabel, href: CONTACT.linkedin, external: true },
+  { label: 'Email', href: `mailto:${CONTACT.email}`, external: false },
+];
+---
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <span class="footer-rule" aria-hidden="true"></span>
+      <p class="mono-label footer-tag">sensor &rarr; state &rarr; meaning</p>
+    </div>
+
+    <nav class="footer-links" aria-label="Social and contact">
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            class="footer-link mono-label"
+            target={l.external ? '_blank' : undefined}
+            rel={l.external ? 'me noopener noreferrer' : undefined}
+          >
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <p class="footer-copy mono-label">&copy; {year} {SITE.name}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 6rem;
+    border-top: 1px solid var(--color-line);
+    background-color: color-mix(in oklab, var(--color-surface) 40%, var(--color-ink));
+  }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.25rem 2rem;
+    padding-block: 2.25rem;
+  }
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .footer-rule {
+    display: block;
+    width: 3rem;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--heat);
+  }
+  .footer-tag {
+    color: var(--color-muted);
+  }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+  .footer-link {
+    color: var(--color-muted);
+    transition: color 0.15s ease;
+  }
+  .footer-link:hover {
+    color: var(--color-data);
+  }
+  .footer-copy {
+    color: color-mix(in oklab, var(--color-muted) 75%, transparent);
+  }
+</style>

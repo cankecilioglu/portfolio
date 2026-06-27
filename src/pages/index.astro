@@ -1,0 +1,179 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import SignalPath from '../components/SignalPath.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+
+const projects = (await getCollection('work', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+const featured = projects.slice(0, 2);
+---
+
+<BaseLayout>
+  {/* ── HERO ─────────────────────────────────────────────── */}
+  <section class="hero">
+    <div class="grid-bg hero-grid" aria-hidden="true"></div>
+    <div class="wrap hero-inner reveal">
+      <Eyebrow class="hero-eyebrow">robotics · perception · embedded</Eyebrow>
+
+      <h1 class="hero-title">From raw sensor<br />to world model.</h1>
+
+      <p class="hero-sub">
+        I'm Can Keçilioğlu — a robotics engineer working at the seam most people skip: the path
+        from a raw reading on bare-metal firmware to a coherent picture of the world a robot can act
+        on.
+      </p>
+
+      <div class="hero-signal">
+        <SignalPath />
+      </div>
+
+      <div class="hero-cta">
+        <ArrowLink href="/work/rover" variant="primary">Read the rover deep-dive</ArrowLink>
+        <ArrowLink href="/contact" variant="ghost">Get in touch</ArrowLink>
+      </div>
+    </div>
+  </section>
+
+  {/* ── FEATURED ─────────────────────────────────────────── */}
+  <section class="wrap section reveal">
+    <div class="section-head">
+      <Eyebrow>selected work</Eyebrow>
+      <a href="/work" class="section-more">all work &rarr;</a>
+    </div>
+    <div class="cards">
+      {
+        featured.map((p, i) => (
+          <ProjectCard
+            href={`/work/${p.id}`}
+            title={p.data.title}
+            summary={p.data.summary}
+            stack={p.data.stack}
+            status={p.data.status}
+            index={String(i + 1).padStart(2, '0')}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  {/* ── CLOSING CTA ──────────────────────────────────────── */}
+  <section class="wrap section reveal">
+    <div class="closing">
+      <span class="closing-rule" aria-hidden="true"></span>
+      <h2 class="display-3">Building at the sensor / state / meaning seam.</h2>
+      <p class="closing-sub">
+        Open to robotics and embedded roles — and to good problems where a noisy reading has to
+        become something a robot can trust.
+      </p>
+      <ArrowLink href="/contact" variant="primary">Get in touch</ArrowLink>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* HERO */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.5;
+  }
+  .hero-inner {
+    padding-block: clamp(3.5rem, 2rem + 7vw, 7rem) clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  }
+  .hero-eyebrow {
+    margin-bottom: 1.5rem;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 0.98;
+    font-size: clamp(2.25rem, 1.1rem + 5vw, 3.6rem);
+    overflow-wrap: break-word;
+    max-width: 18ch;
+  }
+  .hero-sub {
+    margin-top: 1.5rem;
+    max-width: 56ch;
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.2rem);
+    color: var(--color-muted);
+  }
+  .hero-signal {
+    margin-top: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+    max-width: 44rem;
+  }
+  .hero-cta {
+    margin-top: clamp(2.5rem, 1.5rem + 4vw, 3.5rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+
+  /* SECTIONS */
+  .section {
+    margin-top: clamp(4rem, 2.5rem + 6vw, 7rem);
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+  .section-more {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    transition: color 0.15s ease;
+  }
+  .section-more:hover {
+    color: var(--color-data);
+  }
+
+  .cards {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .cards {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* CLOSING */
+  .closing {
+    position: relative;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    background-color: var(--color-surface);
+    padding: clamp(1.75rem, 1.2rem + 2.5vw, 3rem);
+    overflow: hidden;
+  }
+  .closing-rule {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: var(--heat);
+  }
+  .closing h2 {
+    max-width: 24ch;
+  }
+  .closing-sub {
+    margin: 0.85rem 0 1.75rem;
+    max-width: 52ch;
+    color: var(--color-muted);
+  }
+</style>

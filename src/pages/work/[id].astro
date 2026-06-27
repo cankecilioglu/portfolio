@@ -1,0 +1,120 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import TelemetrySidebar from '../../components/TelemetrySidebar.astro';
+import Figure from '../../components/Figure.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('work', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+
+const statusLabel =
+  d.status === 'in-progress' ? 'In progress' : d.status === 'archived' ? 'Archived' : 'Flagship';
+
+type Spec = { label: string; value: string; href?: string };
+const specs: Spec[] = [
+  { label: 'Stack', value: d.stack.join(' · ') },
+  ...(d.role ? [{ label: 'Role', value: d.role }] : []),
+  ...(d.year ? [{ label: 'Year', value: String(d.year) }] : []),
+  ...(d.repo ? [{ label: 'Repo', value: d.repoLabel ?? d.repo, href: d.repo }] : []),
+];
+---
+
+<BaseLayout title={d.title} description={d.summary} article={true}>
+  <article>
+    <section class="wrap proj-head reveal">
+      <a href="/work" class="back">&larr; all work</a>
+      <Eyebrow class="proj-eyebrow">{statusLabel}</Eyebrow>
+      <h1 class="display-1 proj-title">{d.title}</h1>
+      <p class="proj-summary">{d.summary}</p>
+    </section>
+
+    {
+      d.heroMedia && (
+        <section class="wrap proj-hero reveal">
+          <Figure kind="video" accent="signal" ratio="16 / 8" caption={d.heroMedia} />
+        </section>
+      )
+    }
+
+    <div class="wrap proj-body">
+      <div class="proj-content prose">
+        <Content />
+      </div>
+      <div class="proj-aside">
+        <TelemetrySidebar specs={specs} class="proj-telemetry" />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .proj-head {
+    padding-block: clamp(2.5rem, 1.6rem + 4vw, 4.5rem) 0;
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    transition: color 0.15s ease;
+  }
+  .back:hover {
+    color: var(--color-data);
+  }
+  .proj-eyebrow {
+    margin-bottom: 1rem;
+  }
+  .proj-title {
+    max-width: 20ch;
+  }
+  .proj-summary {
+    margin-top: 1.4rem;
+    max-width: 60ch;
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.2rem);
+    color: var(--color-muted);
+  }
+
+  .proj-hero {
+    margin-top: clamp(2rem, 1.4rem + 2.5vw, 3rem);
+  }
+
+  .proj-body {
+    margin-top: clamp(2rem, 1.4rem + 2.5vw, 3rem);
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+    padding-bottom: 1rem;
+  }
+
+  @media (min-width: 980px) {
+    .proj-body {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      gap: 3.5rem;
+      align-items: start;
+    }
+    .proj-content {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .proj-aside {
+      grid-column: 2;
+      grid-row: 1;
+      position: sticky;
+      top: 5.5rem;
+      align-self: start;
+    }
+  }
+</style>

@@ -1,0 +1,150 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  summary: string;
+  stack?: string[];
+  status?: 'flagship' | 'in-progress' | 'archived';
+  index?: string;
+}
+const { href, title, summary, stack = [], status = 'flagship', index } = Astro.props;
+const statusLabel =
+  status === 'in-progress' ? 'In progress' : status === 'archived' ? 'Archived' : 'Flagship';
+---
+
+<a href={href} class="card" data-status={status}>
+  <span class="card-edge" aria-hidden="true"></span>
+  <div class="card-head">
+    {index && <span class="card-index">{index}</span>}
+    <span class="card-status">{statusLabel}</span>
+  </div>
+
+  <h3 class="card-title">{title}</h3>
+  <p class="card-summary">{summary}</p>
+
+  {
+    stack.length > 0 && (
+      <ul class="card-stack">
+        {stack.slice(0, 6).map((s) => (
+          <li>{s}</li>
+        ))}
+      </ul>
+    )
+  }
+
+  <span class="card-cta" aria-hidden="true">
+    view deep-dive <span class="card-arrow">&rarr;</span>
+  </span>
+</a>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    height: 100%;
+    padding: 1.5rem;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition:
+      transform 0.18s var(--ease-out-expo),
+      border-color 0.18s ease,
+      background-color 0.18s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--color-data) 50%, var(--color-line));
+    background-color: var(--color-surface-2);
+  }
+
+  /* Heat hairline that lights up along the top on hover. */
+  .card-edge {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: var(--heat);
+    opacity: 0;
+    transform: scaleX(0.4);
+    transform-origin: left;
+    transition:
+      opacity 0.2s ease,
+      transform 0.3s var(--ease-out-expo);
+  }
+  .card:hover .card-edge {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .card-index {
+    color: var(--color-muted);
+  }
+  .card-status {
+    color: var(--color-data);
+  }
+  .card[data-status='in-progress'] .card-status {
+    color: var(--color-signal);
+  }
+  .card[data-status='archived'] .card-status {
+    color: var(--color-muted);
+  }
+
+  .card-title {
+    font-size: 1.45rem;
+    line-height: 1.1;
+  }
+  .card-summary {
+    color: var(--color-muted);
+    font-size: 0.975rem;
+    line-height: 1.6;
+  }
+
+  .card-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0.1rem 0 0;
+    padding: 0;
+  }
+  .card-stack li {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: 5px;
+  }
+
+  .card-cta {
+    margin-top: auto;
+    padding-top: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .card-arrow {
+    transition: transform 0.18s var(--ease-out-expo);
+  }
+  .card:hover .card-arrow {
+    transform: translateX(4px);
+  }
+</style>

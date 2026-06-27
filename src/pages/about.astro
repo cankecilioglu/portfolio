@@ -1,0 +1,139 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import { CONTACT } from '../consts';
+
+const facts = [
+  { label: 'FOCUS', value: 'perception · sensor fusion · embedded' },
+  { label: 'STACK', value: 'ROS2 · micro-ROS · C/C++ · ESP32 · Raspberry Pi · EKF' },
+  { label: 'NOW', value: 'TAÜ, final year · open to robotics roles' },
+];
+---
+
+<BaseLayout
+  title="About"
+  description="Can Keçilioğlu — final-year mechatronics engineer at the Turkish-German University, working at the seam where a raw sensor reading becomes a world model."
+>
+  <section class="wrap page-head reveal">
+    <Eyebrow>about</Eyebrow>
+    <h1 class="display-1 page-title">The invisible layer.</h1>
+  </section>
+
+  <section class="wrap about-body reveal">
+    <div class="about-copy">
+      <p>
+        I'm a final-year mechatronics engineering student at the Turkish-German University (TAÜ). My
+        work lives in one place: the path from a raw sensor reading to a coherent picture of the
+        world a robot can act on. Sensor &rarr; state &rarr; meaning.
+      </p>
+      <p>
+        My foundation is ROS2, embedded and firmware, and sensor fusion. I'm most useful where the
+        three meet — where a noisy reading on bare metal has to become a state estimate something can
+        trust, and then a world model something can plan on. That seam is where systems quietly
+        break, and it's the part I find most interesting.
+      </p>
+      <p>
+        Most engineering content shows you the build. I'm more interested in the part that's usually
+        invisible: how a robot actually perceives the ground beneath it — the noise it fights, and
+        the estimate it commits to. If that's your kind of problem, we'll get along.
+      </p>
+    </div>
+
+    <dl class="facts">
+      {
+        facts.map((f) => (
+          <div class="facts-row">
+            <dt>{f.label}</dt>
+            <dd>{f.value}</dd>
+          </div>
+        ))
+      }
+      <div class="facts-row">
+        <dt>ELSE</dt>
+        <dd>
+          <a href={CONTACT.github} target="_blank" rel="me noopener noreferrer"
+            >{CONTACT.githubHandle}</a
+          >
+          <span class="sep" aria-hidden="true">·</span>
+          <a href={CONTACT.linkedin} target="_blank" rel="me noopener noreferrer">LinkedIn</a>
+          <span class="sep" aria-hidden="true">·</span>
+          <span class="muted">Ground Truth (newsletter, soon)</span>
+        </dd>
+      </div>
+    </dl>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-body {
+    margin-top: clamp(2rem, 1.4rem + 2.5vw, 3rem);
+    display: grid;
+    gap: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 900px) {
+    .about-body {
+      grid-template-columns: minmax(0, 1fr) 20rem;
+      align-items: start;
+    }
+  }
+
+  .about-copy {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: color-mix(in oklab, var(--color-text) 90%, var(--color-muted));
+    max-width: 62ch;
+  }
+  .about-copy > p + p {
+    margin-top: 1.2em;
+  }
+
+  .facts {
+    margin: 0;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    background-color: color-mix(in oklab, var(--color-surface) 70%, var(--color-ink));
+    padding: 1.35rem;
+    display: grid;
+    gap: 1rem;
+  }
+  .facts-row {
+    display: grid;
+    gap: 0.3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .facts-row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  .facts-row dt {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: var(--color-data);
+  }
+  .facts-row dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--color-text);
+  }
+  .facts-row dd a {
+    color: var(--color-data);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--color-data) 40%, transparent);
+    text-underline-offset: 3px;
+  }
+  .facts-row dd a:hover {
+    text-decoration-color: var(--color-data);
+  }
+  .facts-row .sep {
+    color: var(--color-line);
+    margin-inline: 0.25rem;
+  }
+  .facts-row .muted {
+    color: var(--color-muted);
+  }
+</style>

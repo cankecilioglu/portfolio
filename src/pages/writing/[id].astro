@@ -1,0 +1,68 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('writing', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const d = post.data;
+const dateStr = d.pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={d.title} description={d.description} article={true}>
+  <article class="wrap post">
+    <a href="/writing" class="back">&larr; writing</a>
+    <Eyebrow class="post-eyebrow">ground truth</Eyebrow>
+    <h1 class="display-1 post-title">{d.title}</h1>
+    <p class="post-meta">
+      <time datetime={d.pubDate.toISOString()}>{dateStr}</time>
+    </p>
+    <div class="prose post-content">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .post {
+    padding-block: clamp(2.5rem, 1.6rem + 4vw, 4.5rem) 0;
+    max-width: 46rem;
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    transition: color 0.15s ease;
+  }
+  .back:hover {
+    color: var(--color-data);
+  }
+  .post-eyebrow {
+    margin-bottom: 1rem;
+  }
+  .post-meta {
+    margin-top: 1rem;
+    margin-bottom: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+</style>

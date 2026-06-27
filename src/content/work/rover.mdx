@@ -1,0 +1,141 @@
+---
+title: Ground-analysis rover
+summary: >-
+  Proprioceptive terrain mapping. IMU + GPS fused through an EKF into a live
+  slope-and-roughness heatmap, with micro-ROS bridging an ESP32 and a Raspberry
+  Pi into a real-time dashboard.
+status: flagship
+order: 1
+year: 2025
+role: Perception & embedded lead (team of 5)
+stack:
+  - ROS2
+  - micro-ROS
+  - EKF
+  - ESP32
+  - Raspberry Pi
+  - C/C++
+repo: https://github.com/cankecilioglu/rover_ws
+repoLabel: cankecilioglu/rover_ws
+heroMedia: Live slope / roughness heatmap
+---
+
+import Figure from '../../components/Figure.astro';
+
+The interesting part of this rover isn't that it drives. It's that it builds an
+opinion about the ground underneath it — turning a stream of noisy, bare-metal
+sensor readings into a slope-and-roughness map a planner could actually trust.
+This is the full path: **sensor → state → meaning**.
+
+## The problem
+
+Most terrain mapping leans on cameras or LiDAR — *exteroceptive* sensing that
+looks ahead at the world. That breaks down exactly where it matters: dust, glare,
+low light, featureless ground. Proprioceptive terrain analysis takes the opposite
+stance. Instead of asking "what does the ground look like?", it asks "what does
+the ground *do* to me as I move across it?"
+
+Slope and roughness are the two answers that change how a robot should drive.
+Slope tells you where it might slip or tip; roughness tells you where it will lose
+traction or shake its payload apart. Both are recoverable from motion alone — if
+you can estimate the robot's state precisely enough.
+
+## System overview
+
+The architecture is deliberately split across two compute domains: a
+microcontroller close to the sensors doing hard-real-time work, and a Linux SBC
+running the ROS2 graph. **micro-ROS** is the bridge that makes the ESP32 a
+first-class citizen on the same DDS network as the Pi.
+
+<Figure
+  kind="architecture diagram"
+  ratio="16 / 7"
+  caption="ESP32 (firmware) ⟷ micro-ROS ⟷ Raspberry Pi (ROS2) ⟷ dashboard. One clean data path."
+/>
+
+This separation is the whole point. Timing-critical sampling and the inner loop
+live on bare metal, where jitter is measured in microseconds. Everything that
+benefits from a real operating system — the estimator, the mapping, the
+visualization — lives in ROS2.
+
+## Sensor layer
+
+On the ESP32, the IMU and GPS are read on bare metal. There's no OS to hide
+behind: you own the timing, the bus contention, and the noise. Raw IMU is fast
+and drifts; GPS is slow, absolute, and arrives late. Neither is usable on its own.
+
+The firmware's job is to sample deterministically, timestamp honestly, and ship
+the readings north over micro-ROS without lying about when they happened — because
+the estimator downstream lives or dies on those timestamps.
+
+<Figure
+  kind="signal capture"
+  caption="What the raw IMU/GPS signal actually looks like before fusion — fast and noisy vs. slow and absolute."
+/>
+
+## State layer — the EKF
+
+This is the seam I care about most. An **Extended Kalman Filter** fuses the high-rate
+IMU with the low-rate GPS into a single state estimate — pose and orientation —
+that's smoother than the IMU alone and more responsive than GPS alone. The EKF's
+job is to hold a belief about where the robot is and how it's oriented, and to
+update that belief sensibly every time a new (imperfect) measurement arrives.
+
+The honest version: getting an EKF to *converge* and stay converged is mostly
+about trusting the right sensor at the right moment — tuning the process and
+measurement noise so the filter leans on GPS for absolute drift correction and on
+the IMU for everything fast in between.
+
+<Figure
+  kind="rviz capture"
+  accent="signal"
+  caption="The estimate converging in RViz — the moment the belief locks onto the motion."
+/>
+
+## Meaning layer
+
+State becomes meaning here. With a trustworthy orientation estimate, slope falls
+out of gravity's direction relative to the robot's frame. Roughness falls out of
+the high-frequency content the IMU sees as the wheels cross uneven ground. Each
+patch of terrain the rover traverses gets scored and written into a spatial map.
+
+The output isn't a number on a dashboard — it's a *field*: a map where every cell
+carries how steep and how rough that ground is. That's the world model.
+
+## The dashboard
+
+The payoff is a real-time slope/roughness heatmap, streamed from the Pi to a live
+dashboard as the rover moves. Cool cells are flat and smooth; warm cells are steep
+or rough — the same cool-to-warm logic this whole site is built on.
+
+<Figure
+  kind="video"
+  accent="signal"
+  caption="The hook: the heatmap filling in live as the rover crosses mixed terrain."
+/>
+
+## What I owned
+
+I led **perception and the embedded backbone** in a five-person team. Concretely,
+that meant the ESP32 firmware and sensor layer, the micro-ROS integration that
+joined it to the ROS2 graph, the EKF state estimation, and the slope/roughness
+mapping that turned state into the heatmap. Teammates owned the mechanical
+platform, power, and parts of the dashboard front end.
+
+I'm naming scope deliberately, because "I built a rover" usually hides who built
+*what*. I built the path from the sensor to the map.
+
+## What broke / what I'd change
+
+The part most portfolios skip. A few honest ones:
+
+- **Timestamp discipline.** Early fusion looked plausible but subtly wrong because
+  measurement timing wasn't tight enough. The EKF is only as good as the clock you
+  feed it.
+- **GPS indoors and near structures** is a different animal than GPS in an open
+  field. The filter's trust in GPS had to be earned, not assumed.
+- **Next time:** I'd add wheel odometry as a third input to the filter, and I'd
+  treat estimator tuning as a first-class, logged experiment instead of a feel.
+
+That's the real engineering — not that it worked, but knowing exactly where and
+why it didn't.

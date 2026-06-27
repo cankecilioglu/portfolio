@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+
+const projects = (await getCollection('work', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<BaseLayout
+  title="Work"
+  description="Selected robotics and embedded projects by Can Keçilioğlu — a ground-analysis rover and a from-scratch split-flap display."
+>
+  <section class="wrap page-head reveal">
+    <Eyebrow>work</Eyebrow>
+    <h1 class="display-1 page-title">Selected work.</h1>
+    <p class="page-intro">
+      Fewer projects, more depth. Each one is the full path from a raw sensor reading to something a
+      system can act on — with an honest account of what I owned and what broke.
+    </p>
+  </section>
+
+  <section class="wrap work-grid reveal">
+    {
+      projects.map((p, i) => (
+        <ProjectCard
+          href={`/work/${p.id}`}
+          title={p.data.title}
+          summary={p.data.summary}
+          stack={p.data.stack}
+          status={p.data.status}
+          index={String(i + 1).padStart(2, '0')}
+        />
+      ))
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .work-grid {
+    margin-top: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .work-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
