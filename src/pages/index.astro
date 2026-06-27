@@ -15,44 +15,44 @@ const featured = projects.slice(0, 2);
 
 const marquee = [
   'ROS2',
+  'Robotics',
   'Computer Vision',
-  'YOLO',
-  'LaneNet',
-  'SLAM',
   'Sensor Fusion',
-  'LiDAR',
   'C / C++',
   'Python',
-  'NVIDIA Jetson',
   'Embedded Linux',
-  'Path Planning',
+  'Machine Learning',
+  'SLAM',
+  'Microcontrollers',
+  'NVIDIA Jetson',
+  'Control Systems',
 ];
 
 const capabilities = [
   {
     n: '01',
-    title: 'Autonomous software & ROS2',
-    body: 'Scalable ROS2 architectures for self-driving — mapping, odometry, motion control and navigation.',
+    title: 'Robotics & ROS2',
+    body: 'Robot software on ROS2 — perception, state estimation, navigation and control, from prototype to real-time.',
   },
   {
     n: '02',
     title: 'Perception & computer vision',
-    body: 'Camera and LiDAR perception with YOLO, LaneNet and OpenCV — turning raw frames into decisions.',
+    body: 'Turning sensor and camera data into understanding — sensor fusion plus modern computer vision and ML.',
   },
   {
     n: '03',
-    title: 'Sensor fusion & embedded',
-    body: 'Fusing LiDAR, camera and IMU for localization; real-time C++/Python on Linux and NVIDIA Jetson.',
+    title: 'Embedded & real-time',
+    body: 'Close-to-the-hardware C/C++ and Python on embedded Linux and microcontrollers.',
   },
 ];
 
-const heroCode = `<span class="tok-com">// camera frame → detections → driving decision</span>
+const heroCode = `<span class="tok-com">// raw sensor → state → world model</span>
 <span class="tok-key">while</span> (rclcpp::<span class="tok-fn">ok</span>()) {
-  <span class="tok-key">auto</span> frame   = camera.<span class="tok-fn">read</span>();          <span class="tok-com">// 30 FPS</span>
-  <span class="tok-key">auto</span> objects = yolo.<span class="tok-fn">detect</span>(frame);     <span class="tok-com">// cars · signs · people</span>
-  <span class="tok-key">auto</span> lanes   = lanenet.<span class="tok-fn">segment</span>(frame);
-  <span class="tok-key">auto</span> state   = ekf.<span class="tok-fn">fuse</span>(lidar, imu, gps);  <span class="tok-com">// localize</span>
-  planner.<span class="tok-fn">update</span>(objects, lanes, state); <span class="tok-com">// plan & drive</span>
+  <span class="tok-key">auto</span> imu = imu_sub.<span class="tok-fn">read</span>();    <span class="tok-com">// fast, noisy</span>
+  ekf.<span class="tok-fn">predict</span>(imu, dt);
+  <span class="tok-key">if</span> (<span class="tok-key">auto</span> obs = sensors.<span class="tok-fn">poll</span>())
+    ekf.<span class="tok-fn">update</span>(*obs);         <span class="tok-com">// fuse what arrives</span>
+  <span class="tok-fn">publish</span>(ekf.<span class="tok-fn">state</span>());       <span class="tok-com">// a state you can trust</span>
 }`;
 ---
 
@@ -66,17 +66,16 @@ const heroCode = `<span class="tok-com">// camera frame → detections → drivi
         <p class="hero-role display-3">
           Building <TypedRole
             roles={[
-              'autonomous systems',
+              'robotic systems',
               'perception pipelines',
-              'computer-vision models',
-              'self-driving software',
+              'embedded software',
+              'autonomous machines',
             ]}
           />
         </p>
         <p class="lede hero-lede">
-          Mechatronics engineer and software team lead on a TEKNOFEST-finalist self-driving vehicle.
-          I build the perception, sensor-fusion and embedded software that lets machines see, decide
-          and move — now sharpening the AI side with YOLO, LaneNet and deep learning.
+          Mechatronics engineer building the software and firmware that lets machines sense, decide
+          and act — across robotics, embedded systems and computer vision.
         </p>
         <div class="hero-cta">
           <ArrowLink href="/work" variant="primary">View work</ArrowLink>

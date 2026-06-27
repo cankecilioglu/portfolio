@@ -13,7 +13,7 @@ export const SITE = {
   role: 'Robotics, AI & embedded engineer',
   /** Default meta description for pages that do not set their own. */
   description:
-    'Can Keçilioğlu — mechatronics engineer building autonomous systems. Software Team Lead on a TEKNOFEST-finalist self-driving vehicle: ROS2, computer vision, sensor fusion and embedded software.',
+    'Can Keçilioğlu — mechatronics engineer working across robotics, AI and embedded systems. I build the software and firmware that lets machines sense, decide and act.',
 } as const;
 
 export const CONTACT = {
