@@ -1,0 +1,10 @@
+{
+  // Static site deploy for Cloudflare Workers (Static Assets).
+  // Tells `wrangler deploy` to simply serve the built ./dist folder — no Worker
+  // code, no SSR adapter, no auto-config. The site is fully static (astro build).
+  "name": "portfolio",
+  "compatibility_date": "2025-06-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}
