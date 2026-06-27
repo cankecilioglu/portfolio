@@ -23,9 +23,9 @@ const dateStr = d.pubDate.toLocaleDateString('en-US', {
 
 <BaseLayout title={d.title} description={d.description} article={true}>
   <article class="wrap post">
-    <a href="/writing" class="back">&larr; writing</a>
-    <Eyebrow class="post-eyebrow">ground truth</Eyebrow>
-    <h1 class="display-1 post-title">{d.title}</h1>
+    <a href="/writing" class="back">&larr; Writing</a>
+    <Eyebrow class="post-eyebrow">Ground Truth</Eyebrow>
+    <h1 class="display-2 post-title">{d.title}</h1>
     <p class="post-meta">
       <time datetime={d.pubDate.toISOString()}>{dateStr}</time>
     </p>
@@ -37,32 +37,28 @@ const dateStr = d.pubDate.toLocaleDateString('en-US', {
 
 <style>
   .post {
-    padding-block: clamp(2.5rem, 1.6rem + 4vw, 4.5rem) 0;
+    padding-block: clamp(2.5rem, 1.6rem + 4vw, 4.5rem) clamp(4rem, 2.5rem + 5vw, 7rem);
     max-width: 46rem;
   }
   .back {
     display: inline-block;
     margin-bottom: 1.5rem;
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--color-muted);
+    color: var(--muted);
     transition: color 0.15s ease;
   }
-  .back:hover {
-    color: var(--color-data);
-  }
-  .post-eyebrow {
-    margin-bottom: 1rem;
-  }
+  .back:hover { color: var(--accent); }
+  .post-eyebrow { margin-bottom: 1rem; }
   .post-meta {
     margin-top: 1rem;
     margin-bottom: 2.5rem;
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--color-muted);
+    color: var(--muted);
   }
 </style>

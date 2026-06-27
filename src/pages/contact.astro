@@ -4,33 +4,35 @@ import Eyebrow from '../components/Eyebrow.astro';
 import { CONTACT } from '../consts';
 
 const methods = [
-  { label: 'EMAIL', value: CONTACT.email, href: `mailto:${CONTACT.email}` },
-  { label: 'GITHUB', value: CONTACT.githubHandle, href: CONTACT.github, external: true },
-  { label: 'LINKEDIN', value: 'in/can-kecilioglu', href: CONTACT.linkedin, external: true },
+  { label: 'Email', value: CONTACT.email, href: `mailto:${CONTACT.email}` },
+  { label: 'GitHub', value: CONTACT.githubHandle, href: CONTACT.github, external: true },
+  { label: 'LinkedIn', value: 'in/can-kecilioglu', href: CONTACT.linkedin, external: true },
 ];
 ---
 
 <BaseLayout
   title="Contact"
-  description="Get in touch with Can Keçilioğlu — open to robotics and embedded roles, and to good problems at the sensor / state / meaning seam."
+  description="Get in touch with Can Keçilioğlu — open to robotics and embedded roles, internships, and collaboration."
 >
-  <section class="wrap page-head reveal">
-    <Eyebrow>contact</Eyebrow>
-    <h1 class="display-1 page-title">Let's talk.</h1>
-    <p class="page-intro">
-      Open to robotics and embedded roles, and to good problems at the sensor / state / meaning seam.
-      Best way to reach me:
-    </p>
+  <section class="wrap page-head">
+    <div class="reveal">
+      <Eyebrow>Contact</Eyebrow>
+      <h1 class="display-1 page-title">Let&rsquo;s talk.</h1>
+      <p class="lede page-intro">
+        Open to robotics and embedded roles, internships, and collaboration on interesting problems.
+        The fastest way to reach me:
+      </p>
+    </div>
   </section>
 
-  <section class="wrap contact-body reveal">
-    <ul class="methods">
+  <section class="wrap contact-body">
+    <ul class="methods reveal">
       {
         methods.map((m) => (
-          <li class="method">
+          <li>
             <a
               href={m.href}
-              class="method-link"
+              class="method"
               target={m.external ? '_blank' : undefined}
               rel={m.external ? 'me noopener noreferrer' : undefined}
             >
@@ -42,15 +44,12 @@ const methods = [
         ))
       }
     </ul>
-
-    <p class="contact-foot">
-      A "Ground Truth" newsletter is coming — the rover article will be the first dispatch.
-    </p>
   </section>
 </BaseLayout>
 
 <style>
   .contact-body {
+    padding-bottom: clamp(4rem, 2.5rem + 6vw, 7rem);
     margin-top: clamp(2rem, 1.4rem + 3vw, 3.25rem);
   }
   .methods {
@@ -59,54 +58,42 @@ const methods = [
     padding: 0;
     display: grid;
     gap: 0.85rem;
-    max-width: 44rem;
+    max-width: 46rem;
   }
-  .method-link {
+  .method {
     display: flex;
     align-items: baseline;
     gap: 1rem;
-    padding: 1.1rem 1.25rem;
-    border: 1px solid var(--color-line);
+    padding: 1.15rem 1.35rem;
+    border: 1px solid var(--line);
     border-radius: var(--radius);
-    background-color: var(--color-surface);
+    background-color: var(--card);
     transition:
       transform 0.16s var(--ease-out-expo),
-      border-color 0.16s ease,
-      background-color 0.16s ease;
+      border-color 0.16s ease;
   }
-  .method-link:hover {
+  .method:hover {
     transform: translateY(-2px);
-    border-color: color-mix(in oklab, var(--color-data) 50%, var(--color-line));
-    background-color: var(--color-surface-2);
+    border-color: color-mix(in oklab, var(--accent) 55%, var(--line));
   }
   .method-label {
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    color: var(--color-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
     min-width: 5.5rem;
   }
   .method-value {
     font-family: var(--font-mono);
     font-size: 0.95rem;
-    color: var(--color-text);
+    color: var(--fg);
     word-break: break-word;
   }
   .method-arrow {
     margin-left: auto;
-    color: var(--color-data);
+    color: var(--accent);
     transition: transform 0.18s var(--ease-out-expo);
   }
-  .method-link:hover .method-arrow {
-    transform: translateX(4px);
-  }
-
-  .contact-foot {
-    margin-top: 2rem;
-    max-width: 44rem;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.04em;
-    color: var(--color-muted);
-  }
+  .method:hover .method-arrow { transform: translateX(4px); }
 </style>

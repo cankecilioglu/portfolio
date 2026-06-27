@@ -1,0 +1,28 @@
+---
+/**
+ * Decorative terminal-style code window. Pass a filename and either a `code`
+ * HTML string (with .tok-* spans, newlines preserved) or default-slot content.
+ */
+interface Props {
+  file?: string;
+  code?: string;
+  class?: string;
+}
+const { file = 'main.cpp', code, class: className = '' } = Astro.props;
+---
+
+<div class:list={['code-card', className]} aria-hidden="true">
+  <div class="code-bar">
+    <span class="dot is-orange"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="code-file">{file}</span>
+  </div>
+  {
+    code ? (
+      <pre class="code-body"><code set:html={code} /></pre>
+    ) : (
+      <pre class="code-body"><code><slot /></code></pre>
+    )
+  }
+</div>

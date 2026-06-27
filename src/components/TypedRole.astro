@@ -1,0 +1,86 @@
+---
+/**
+ * A typed / rotating word with a blinking caret. Renders the first role
+ * server-side (works without JS); the script types through the rest and
+ * respects prefers-reduced-motion.
+ */
+interface Props {
+  roles: string[];
+  class?: string;
+}
+const { roles, class: className = '' } = Astro.props;
+const first = roles[0] ?? '';
+---
+
+<span class:list={['typed', className]} data-roles={JSON.stringify(roles)}>
+  <span class="typed-text">{first}</span>
+</span>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('.typed').forEach((el) => {
+    const textEl = el.querySelector<HTMLElement>('.typed-text');
+    let roles: string[] = [];
+    try {
+      roles = JSON.parse(el.getAttribute('data-roles') || '[]');
+    } catch {
+      roles = [];
+    }
+    if (!textEl || roles.length < 2 || reduce) return;
+
+    let i = 0;
+    let j = roles[0].length;
+    let deleting = false;
+
+    const tick = () => {
+      const word = roles[i];
+      if (!deleting) {
+        j += 1;
+        textEl.textContent = word.slice(0, j);
+        if (j >= word.length) {
+          deleting = true;
+          setTimeout(tick, 1600);
+          return;
+        }
+      } else {
+        j -= 1;
+        textEl.textContent = word.slice(0, j);
+        if (j <= 0) {
+          deleting = false;
+          i = (i + 1) % roles.length;
+          setTimeout(tick, 240);
+          return;
+        }
+      }
+      setTimeout(tick, deleting ? 45 : 85);
+    };
+
+    setTimeout(tick, 1500);
+  });
+</script>
+
+<style>
+  .typed {
+    color: var(--accent);
+    font-weight: 800;
+  }
+  .typed-text {
+    border-right: 0.07em solid var(--accent);
+    padding-right: 0.06em;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .typed-text {
+      animation: typed-caret 1.05s steps(1) infinite;
+    }
+  }
+  @keyframes typed-caret {
+    0%,
+    45% {
+      border-color: var(--accent);
+    }
+    55%,
+    100% {
+      border-color: transparent;
+    }
+  }
+</style>

@@ -2,74 +2,160 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Eyebrow from '../components/Eyebrow.astro';
-import SignalPath from '../components/SignalPath.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import Badge from '../components/Badge.astro';
 import ArrowLink from '../components/ArrowLink.astro';
+import TypedRole from '../components/TypedRole.astro';
+import CodeCard from '../components/CodeCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 
 const projects = (await getCollection('work', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order
 );
 const featured = projects.slice(0, 2);
+
+const marquee = [
+  'ROS2',
+  'micro-ROS',
+  'Sensor Fusion',
+  'EKF',
+  'C / C++',
+  'ESP32',
+  'Raspberry Pi',
+  'Embedded Firmware',
+  'Real-time Systems',
+  'State Estimation',
+];
+
+const capabilities = [
+  {
+    n: '01',
+    title: 'Perception & sensor fusion',
+    body: 'Turning noisy IMU, GPS and range data into clean, trustworthy state — with filters like the EKF at the core.',
+  },
+  {
+    n: '02',
+    title: 'Embedded & firmware',
+    body: 'Bare-metal C/C++ on microcontrollers, deterministic sampling, and bridging hardware into ROS2 over micro-ROS.',
+  },
+  {
+    n: '03',
+    title: 'Systems & integration',
+    body: 'Designing the whole path — sensor to estimate to world model — and making the seams between them reliable.',
+  },
+];
+
+const heroCode = `<span class="tok-com">// raw sensor → state → world model</span>
+<span class="tok-key">while</span> (rclcpp::<span class="tok-fn">ok</span>()) {
+  <span class="tok-key">auto</span> imu = imu_sub.<span class="tok-fn">read</span>();   <span class="tok-com">// 200 Hz, noisy</span>
+  ekf.<span class="tok-fn">predict</span>(imu, dt);
+  <span class="tok-key">if</span> (<span class="tok-key">auto</span> gps = gps_sub.<span class="tok-fn">poll</span>())
+    ekf.<span class="tok-fn">update</span>(*gps);        <span class="tok-com">// 10 Hz, absolute</span>
+  <span class="tok-fn">publish</span>(ekf.<span class="tok-fn">state</span>());        <span class="tok-com">// a pose you can trust</span>
+}`;
 ---
 
 <BaseLayout>
   {/* ── HERO ─────────────────────────────────────────────── */}
   <section class="hero">
-    <div class="grid-bg hero-grid" aria-hidden="true"></div>
-    <div class="wrap hero-inner reveal">
-      <Eyebrow class="hero-eyebrow">robotics · perception · embedded</Eyebrow>
-
-      <h1 class="hero-title">From raw sensor<br />to world model.</h1>
-
-      <p class="hero-sub">
-        I'm Can Keçilioğlu — a robotics engineer working at the seam most people skip: the path
-        from a raw reading on bare-metal firmware to a coherent picture of the world a robot can act
-        on.
-      </p>
-
-      <div class="hero-signal">
-        <SignalPath />
-      </div>
-
-      <div class="hero-cta">
-        <ArrowLink href="/work/rover" variant="primary">Read the rover deep-dive</ArrowLink>
-        <ArrowLink href="/contact" variant="ghost">Get in touch</ArrowLink>
-      </div>
-    </div>
-  </section>
-
-  {/* ── FEATURED ─────────────────────────────────────────── */}
-  <section class="wrap section reveal">
-    <div class="section-head">
-      <Eyebrow>selected work</Eyebrow>
-      <a href="/work" class="section-more">all work &rarr;</a>
-    </div>
-    <div class="cards">
-      {
-        featured.map((p, i) => (
-          <ProjectCard
-            href={`/work/${p.id}`}
-            title={p.data.title}
-            summary={p.data.summary}
-            stack={p.data.stack}
-            status={p.data.status}
-            index={String(i + 1).padStart(2, '0')}
+    <div class="wrap hero-grid">
+      <div class="hero-content reveal">
+        <Badge dot>Available for robotics roles</Badge>
+        <Eyebrow class="hero-eyebrow">Robotics · Perception · Embedded</Eyebrow>
+        <h1 class="display-1 hero-name">Can Keçilioğlu</h1>
+        <p class="hero-role display-3">
+          Building <TypedRole
+            roles={[
+              'perception systems',
+              'embedded firmware',
+              'sensor-fusion pipelines',
+              'real-time world models',
+            ]}
           />
-        ))
-      }
+        </p>
+        <p class="lede hero-lede">
+          Final-year mechatronics engineer focused on the software and firmware that lets robots
+          sense, estimate and act — from bare-metal sensor drivers to the state estimation a system
+          can plan on.
+        </p>
+        <div class="hero-cta">
+          <ArrowLink href="/work" variant="primary">View work</ArrowLink>
+          <ArrowLink href="/contact" variant="ghost">Get in touch</ArrowLink>
+        </div>
+      </div>
+
+      <div class="hero-aside reveal">
+        <CodeCard file="perception/ekf_node.cpp" code={heroCode} />
+      </div>
     </div>
   </section>
 
-  {/* ── CLOSING CTA ──────────────────────────────────────── */}
-  <section class="wrap section reveal">
-    <div class="closing">
-      <span class="closing-rule" aria-hidden="true"></span>
-      <h2 class="display-3">Building at the sensor / state / meaning seam.</h2>
-      <p class="closing-sub">
-        Open to robotics and embedded roles — and to good problems where a noisy reading has to
-        become something a robot can trust.
-      </p>
-      <ArrowLink href="/contact" variant="primary">Get in touch</ArrowLink>
+  {/* ── TECH MARQUEE ─────────────────────────────────────── */}
+  <section class="marquee-band" aria-hidden="true">
+    <div class="marquee">
+      <div class="marquee-row">
+        {marquee.map((t) => (<span class="marquee-item">{t}</span>))}
+      </div>
+      <div class="marquee-row">
+        {marquee.map((t) => (<span class="marquee-item">{t}</span>))}
+      </div>
+    </div>
+  </section>
+
+  {/* ── FEATURED (light) ─────────────────────────────────── */}
+  <section class="section on-light">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <Eyebrow>Selected work</Eyebrow>
+        <a href="/work" class="section-more label">All work &rarr;</a>
+      </div>
+      <div class="cards reveal">
+        {
+          featured.map((p, i) => (
+            <ProjectCard
+              href={`/work/${p.id}`}
+              title={p.data.title}
+              summary={p.data.summary}
+              stack={p.data.stack}
+              status={p.data.status}
+              index={String(i + 1).padStart(2, '0')}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ── CAPABILITIES (dark) ──────────────────────────────── */}
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <Eyebrow>What I do</Eyebrow>
+      </div>
+      <div class="cap-grid reveal">
+        {
+          capabilities.map((c) => (
+            <div class="card cap">
+              <span class="cap-n label label-accent">{c.n}</span>
+              <h3 class="cap-title">{c.title}</h3>
+              <p class="cap-body">{c.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ── CLOSING ──────────────────────────────────────────── */}
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="closing reveal">
+        <h2 class="display-2 closing-title">Let&rsquo;s build something that perceives.</h2>
+        <p class="lede closing-lede">
+          Open to robotics and embedded roles, and to hard problems in perception and real-time
+          systems.
+        </p>
+        <ArrowLink href="/contact" variant="primary">Get in touch</ArrowLink>
+      </div>
     </div>
   </section>
 </BaseLayout>
@@ -79,101 +165,138 @@ const featured = projects.slice(0, 2);
   .hero {
     position: relative;
     overflow: hidden;
-    isolation: isolate;
+    background:
+      radial-gradient(55% 50% at 88% 8%, color-mix(in oklab, var(--color-orange) 12%, transparent), transparent 70%);
   }
   .hero-grid {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    opacity: 0.5;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    padding-block: clamp(3.5rem, 2rem + 7vw, 7rem) clamp(3rem, 2rem + 5vw, 6rem);
   }
-  .hero-inner {
-    padding-block: clamp(3.5rem, 2rem + 7vw, 7rem) clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  @media (min-width: 960px) {
+    .hero-grid {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 3.5rem;
+    }
   }
-  .hero-eyebrow {
-    margin-bottom: 1.5rem;
+  .hero-eyebrow { margin-top: 1.5rem; }
+  .hero-name {
+    margin-top: 1rem;
   }
-  .hero-title {
-    font-family: var(--font-display);
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    line-height: 0.98;
-    font-size: clamp(2.25rem, 1.1rem + 5vw, 3.6rem);
-    overflow-wrap: break-word;
-    max-width: 18ch;
+  .hero-role {
+    margin-top: 0.75rem;
+    color: var(--fg);
   }
-  .hero-sub {
-    margin-top: 1.5rem;
-    max-width: 56ch;
-    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.2rem);
-    color: var(--color-muted);
-  }
-  .hero-signal {
-    margin-top: clamp(2.5rem, 1.5rem + 4vw, 4rem);
-    max-width: 44rem;
-  }
+  .hero-lede { margin-top: 1.5rem; }
   .hero-cta {
-    margin-top: clamp(2.5rem, 1.5rem + 4vw, 3.5rem);
+    margin-top: 2.25rem;
     display: flex;
     flex-wrap: wrap;
     gap: 0.85rem;
   }
+  .hero-aside { min-width: 0; }
 
-  /* SECTIONS */
-  .section {
-    margin-top: clamp(4rem, 2.5rem + 6vw, 7rem);
+  /* MARQUEE */
+  .marquee-band {
+    border-block: 1px solid var(--color-line-d);
+    background: #0b0a09;
+    overflow: hidden;
   }
+  .marquee {
+    display: flex;
+    width: max-content;
+  }
+  .marquee-row {
+    display: flex;
+    align-items: center;
+    gap: 2.75rem;
+    padding: 0.9rem 1.4rem;
+  }
+  .marquee-item {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted-d);
+    white-space: nowrap;
+    position: relative;
+  }
+  .marquee-item::before {
+    content: '';
+    position: absolute;
+    left: -1.45rem;
+    top: 50%;
+    width: 0.3rem;
+    height: 0.3rem;
+    border-radius: 999px;
+    background: var(--color-orange);
+    transform: translateY(-50%);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .marquee { animation: marquee 38s linear infinite; }
+  }
+
+  /* SECTION HEAD */
   .section-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 1.75rem;
+    margin-bottom: 2.25rem;
   }
   .section-more {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-muted);
+    color: var(--muted);
     transition: color 0.15s ease;
   }
-  .section-more:hover {
-    color: var(--color-data);
-  }
+  .section-more:hover { color: var(--accent); }
 
+  /* CARDS */
   .cards {
     display: grid;
     gap: 1.25rem;
     grid-template-columns: 1fr;
   }
-  @media (min-width: 720px) {
-    .cards {
-      grid-template-columns: 1fr 1fr;
-    }
+  @media (min-width: 760px) {
+    .cards { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* CAPABILITIES */
+  .cap-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 760px) {
+    .cap-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .cap {
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .cap-title {
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+  .cap-body {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
   }
 
   /* CLOSING */
   .closing {
-    position: relative;
-    border: 1px solid var(--color-line);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
-    background-color: var(--color-surface);
-    padding: clamp(1.75rem, 1.2rem + 2.5vw, 3rem);
-    overflow: hidden;
+    background:
+      radial-gradient(80% 120% at 0% 0%, color-mix(in oklab, var(--color-orange) 14%, transparent), transparent 60%),
+      var(--card);
+    padding: clamp(2rem, 1.4rem + 3vw, 3.5rem);
   }
-  .closing-rule {
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 3px;
-    background: var(--heat);
-  }
-  .closing h2 {
-    max-width: 24ch;
-  }
-  .closing-sub {
-    margin: 0.85rem 0 1.75rem;
-    max-width: 52ch;
-    color: var(--color-muted);
-  }
+  .closing-title { max-width: 18ch; }
+  .closing-lede { margin: 1rem 0 2rem; }
 </style>

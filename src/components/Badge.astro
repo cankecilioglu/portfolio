@@ -1,0 +1,12 @@
+---
+interface Props {
+  class?: string;
+  dot?: boolean;
+}
+const { class: className = '', dot = false } = Astro.props;
+---
+
+<span class:list={['badge', className]}>
+  {dot && <span class="badge-dot" aria-hidden="true"></span>}
+  <slot />
+</span>

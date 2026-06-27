@@ -10,7 +10,7 @@ const isActive = (href: string) =>
   <div class="wrap header-inner">
     <a href="/" class="wordmark" aria-label={`${SITE.name} — home`}>
       <span class="wordmark-mark" aria-hidden="true"></span>
-      <span class="wordmark-text">{SITE.domain}</span>
+      <span class="wordmark-text">{SITE.name}</span>
     </a>
 
     <nav aria-label="Primary">
@@ -38,81 +38,65 @@ const isActive = (href: string) =>
     position: sticky;
     top: 0;
     z-index: 50;
-    background-color: color-mix(in oklab, var(--color-ink) 82%, transparent);
-    backdrop-filter: blur(10px) saturate(120%);
-    -webkit-backdrop-filter: blur(10px) saturate(120%);
-    border-bottom: 1px solid var(--color-line);
+    background-color: color-mix(in oklab, var(--color-ink) 78%, transparent);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border-bottom: 1px solid var(--color-line-d);
   }
 
   .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem 1.5rem;
+    gap: 0.75rem 1.5rem;
     flex-wrap: wrap;
-    min-height: 4rem;
-    padding-block: 0.75rem;
+    min-height: 4.25rem;
+    padding-block: 0.7rem;
   }
 
   .wordmark {
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    font-family: var(--font-mono);
-    font-size: 0.95rem;
-    letter-spacing: 0.01em;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-size: 1.05rem;
     color: var(--color-text);
-    transition: color 0.15s ease;
+    transition: opacity 0.15s ease;
   }
-  .wordmark:hover {
-    color: var(--color-data);
-  }
+  .wordmark:hover { opacity: 0.8; }
   .wordmark-mark {
     width: 0.85rem;
     height: 0.85rem;
     border-radius: 3px;
-    background: var(--heat);
-    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-signal) 35%, transparent),
-      0 0 12px -2px color-mix(in oklab, var(--color-signal) 60%, transparent);
-  }
-  .wordmark-text {
-    font-weight: 500;
+    background: var(--color-orange);
+    box-shadow: 0 0 14px -2px color-mix(in oklab, var(--color-orange) 75%, transparent);
   }
 
   .nav-list {
     display: flex;
     align-items: center;
-    gap: clamp(0.75rem, 2.5vw, 1.75rem);
+    gap: clamp(0.85rem, 2.5vw, 1.9rem);
     list-style: none;
     margin: 0;
     padding: 0;
     flex-wrap: wrap;
   }
-
   .nav-link {
-    position: relative;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
+    font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--color-muted);
+    color: var(--color-muted-d);
     padding-block: 0.35rem;
     transition: color 0.15s ease;
   }
-  .nav-link:hover {
-    color: var(--color-text);
-  }
-  .nav-link[aria-current='page'] {
-    color: var(--color-data);
-  }
-  .nav-link[aria-current='page']::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -0.1rem;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--color-data);
+  .nav-link:hover { color: var(--color-text); }
+  .nav-link[aria-current='page'] { color: var(--color-orange); }
+
+  @media (max-width: 540px) {
+    nav[aria-label='Primary'] { flex-basis: 100%; }
+    .nav-list { justify-content: flex-start; }
   }
 </style>

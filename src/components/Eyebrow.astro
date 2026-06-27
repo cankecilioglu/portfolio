@@ -5,26 +5,21 @@ interface Props {
 const { class: className = '' } = Astro.props;
 ---
 
-<p class:list={['eyebrow', className]}>
-  <span class="eyebrow-slashes" aria-hidden="true">//</span>
-  <span class="eyebrow-text"><slot /></span>
+<p class:list={['label eyebrow', className]}>
+  <span class="eyebrow-tick" aria-hidden="true"></span>
+  <slot />
 </p>
 
 <style>
   .eyebrow {
     display: flex;
     align-items: center;
-    gap: 0.55rem;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-muted);
+    gap: 0.6rem;
   }
-  .eyebrow-slashes {
-    color: var(--color-data);
-    font-weight: 600;
+  .eyebrow-tick {
+    width: 1.25rem;
+    height: 1px;
+    background: var(--accent);
+    flex: none;
   }
 </style>

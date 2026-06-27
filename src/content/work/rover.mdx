@@ -86,6 +86,17 @@ about trusting the right sensor at the right moment — tuning the process and
 measurement noise so the filter leans on GPS for absolute drift correction and on
 the IMU for everything fast in between.
 
+```cpp
+// EKF core — predict on fast IMU, correct on slow GPS
+state = f(state, imu, dt);              // motion model
+P     = F * P * F.t() + Q;             // grow uncertainty
+if (gps.fresh()) {                     // ~10 Hz, absolute
+  K     = P * H.t() * (H * P * H.t() + R).inverse();
+  state = state + K * (gps.z - h(state));
+  P     = (I - K * H) * P;             // shrink uncertainty
+}
+```
+
 <Figure
   kind="rviz capture"
   accent="signal"

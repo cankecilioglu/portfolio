@@ -1,19 +1,17 @@
 ---
 /**
- * A telemetry-styled media frame. Used inside project MDX as an on-brand
- * placeholder for assets that aren't in yet (heatmap clip, architecture
- * diagram, RViz capture). Swap the inner box for an <img>/<video> later.
+ * Telemetry-styled media frame — on-brand placeholder for assets not in yet
+ * (heatmap clip, architecture diagram, RViz capture). Swap for <img>/<video>.
  */
 interface Props {
   kind?: string;
   caption?: string;
   ratio?: string;
-  accent?: 'data' | 'signal';
 }
-const { kind = 'media', caption, ratio = '16 / 9', accent = 'data' } = Astro.props;
+const { kind = 'media', caption, ratio = '16 / 9' } = Astro.props;
 ---
 
-<figure class="media-frame" data-accent={accent}>
+<figure class="media-frame">
   <div class="media-box" style={`aspect-ratio:${ratio}`}>
     <span class="media-corner tl" aria-hidden="true"></span>
     <span class="media-corner tr" aria-hidden="true"></span>
@@ -35,13 +33,13 @@ const { kind = 'media', caption, ratio = '16 / 9', accent = 'data' } = Astro.pro
     place-content: center;
     gap: 0.4rem;
     width: 100%;
-    border: 1px solid var(--color-line);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
-    background-color: color-mix(in oklab, var(--color-surface) 60%, var(--color-ink));
+    background-color: var(--card);
     background-image:
-      linear-gradient(to right, color-mix(in oklab, var(--color-line) 50%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in oklab, var(--color-line) 50%, transparent) 1px, transparent 1px);
-    background-size: 32px 32px;
+      linear-gradient(to right, color-mix(in oklab, var(--line) 60%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--line) 60%, transparent) 1px, transparent 1px);
+    background-size: 34px 34px;
     text-align: center;
     overflow: hidden;
   }
@@ -50,55 +48,30 @@ const { kind = 'media', caption, ratio = '16 / 9', accent = 'data' } = Astro.pro
     font-size: 0.8rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--color-data);
-  }
-  .media-frame[data-accent='signal'] .media-kind {
-    color: var(--color-signal);
+    color: var(--accent);
   }
   .media-hint {
     font-family: var(--font-mono);
     font-size: 0.68rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: color-mix(in oklab, var(--color-muted) 75%, transparent);
+    color: var(--muted);
   }
-
   .media-corner {
     position: absolute;
     width: 12px;
     height: 12px;
-    border: 1px solid color-mix(in oklab, var(--color-muted) 60%, transparent);
+    border: 1px solid color-mix(in oklab, var(--muted) 55%, transparent);
   }
-  .media-corner.tl {
-    top: 10px;
-    left: 10px;
-    border-right: 0;
-    border-bottom: 0;
-  }
-  .media-corner.tr {
-    top: 10px;
-    right: 10px;
-    border-left: 0;
-    border-bottom: 0;
-  }
-  .media-corner.bl {
-    bottom: 10px;
-    left: 10px;
-    border-right: 0;
-    border-top: 0;
-  }
-  .media-corner.br {
-    bottom: 10px;
-    right: 10px;
-    border-left: 0;
-    border-top: 0;
-  }
-
+  .media-corner.tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+  .media-corner.tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+  .media-corner.bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
+  .media-corner.br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
   .media-cap {
     margin-top: 0.7rem;
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    color: var(--color-muted);
+    letter-spacing: 0.05em;
+    color: var(--muted);
   }
 </style>

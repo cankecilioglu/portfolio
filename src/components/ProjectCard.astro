@@ -1,4 +1,6 @@
 ---
+import Badge from './Badge.astro';
+
 interface Props {
   href: string;
   title: string;
@@ -12,19 +14,18 @@ const statusLabel =
   status === 'in-progress' ? 'In progress' : status === 'archived' ? 'Archived' : 'Flagship';
 ---
 
-<a href={href} class="card" data-status={status}>
-  <span class="card-edge" aria-hidden="true"></span>
-  <div class="card-head">
-    {index && <span class="card-index">{index}</span>}
-    <span class="card-status">{statusLabel}</span>
+<a href={href} class="card card-hover project">
+  <div class="project-head">
+    {index && <span class="project-index label">{index}</span>}
+    <Badge>{statusLabel}</Badge>
   </div>
 
-  <h3 class="card-title">{title}</h3>
-  <p class="card-summary">{summary}</p>
+  <h3 class="project-title">{title}</h3>
+  <p class="project-summary">{summary}</p>
 
   {
     stack.length > 0 && (
-      <ul class="card-stack">
+      <ul class="project-stack">
         {stack.slice(0, 6).map((s) => (
           <li>{s}</li>
         ))}
@@ -32,86 +33,40 @@ const statusLabel =
     )
   }
 
-  <span class="card-cta" aria-hidden="true">
-    view deep-dive <span class="card-arrow">&rarr;</span>
+  <span class="project-cta" aria-hidden="true">
+    View project <span class="arrow">&rarr;</span>
   </span>
 </a>
 
 <style>
-  .card {
-    position: relative;
+  .project {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
+    gap: 0.9rem;
     height: 100%;
-    padding: 1.5rem;
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-line);
-    border-radius: var(--radius);
-    overflow: hidden;
-    transition:
-      transform 0.18s var(--ease-out-expo),
-      border-color 0.18s ease,
-      background-color 0.18s ease;
+    padding: 1.6rem;
   }
-  .card:hover {
-    transform: translateY(-3px);
-    border-color: color-mix(in oklab, var(--color-data) 50%, var(--color-line));
-    background-color: var(--color-surface-2);
-  }
-
-  /* Heat hairline that lights up along the top on hover. */
-  .card-edge {
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 2px;
-    background: var(--heat);
-    opacity: 0;
-    transform: scaleX(0.4);
-    transform-origin: left;
-    transition:
-      opacity 0.2s ease,
-      transform 0.3s var(--ease-out-expo);
-  }
-  .card:hover .card-edge {
-    opacity: 1;
-    transform: scaleX(1);
-  }
-
-  .card-head {
+  .project-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
   }
-  .card-index {
-    color: var(--color-muted);
+  .project-index {
+    color: var(--muted);
   }
-  .card-status {
-    color: var(--color-data);
+  .project-title {
+    font-size: 1.55rem;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--fg);
   }
-  .card[data-status='in-progress'] .card-status {
-    color: var(--color-signal);
-  }
-  .card[data-status='archived'] .card-status {
-    color: var(--color-muted);
-  }
-
-  .card-title {
-    font-size: 1.45rem;
-    line-height: 1.1;
-  }
-  .card-summary {
-    color: var(--color-muted);
+  .project-summary {
+    color: var(--muted);
     font-size: 0.975rem;
     line-height: 1.6;
   }
-
-  .card-stack {
+  .project-stack {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
@@ -119,32 +74,31 @@ const statusLabel =
     margin: 0.1rem 0 0;
     padding: 0;
   }
-  .card-stack li {
+  .project-stack li {
     font-family: var(--font-mono);
     font-size: 0.7rem;
-    letter-spacing: 0.04em;
-    color: var(--color-muted);
-    padding: 0.2rem 0.5rem;
-    border: 1px solid var(--color-line);
-    border-radius: 5px;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+    padding: 0.22rem 0.55rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
   }
-
-  .card-cta {
+  .project-cta {
     margin-top: auto;
-    padding-top: 0.4rem;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-text);
+    padding-top: 0.5rem;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
   }
-  .card-arrow {
-    transition: transform 0.18s var(--ease-out-expo);
-  }
-  .card:hover .card-arrow {
+  .project:hover .project-cta .arrow {
     transform: translateX(4px);
+  }
+  .project-cta .arrow {
+    transition: transform 0.18s var(--ease-out-expo);
   }
 </style>

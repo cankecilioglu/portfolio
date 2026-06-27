@@ -1,78 +1,23 @@
 ---
 interface Props {
   href: string;
-  variant?: 'primary' | 'ghost' | 'text';
+  variant?: 'primary' | 'ghost';
   class?: string;
   external?: boolean;
+  arrow?: boolean;
 }
-const { href, variant = 'primary', class: className = '', external = false } = Astro.props;
+const {
+  href,
+  variant = 'primary',
+  class: className = '',
+  external = false,
+  arrow = true,
+} = Astro.props;
 const rel = external ? 'noopener noreferrer' : undefined;
 const target = external ? '_blank' : undefined;
 ---
 
 <a href={href} class:list={['btn', `btn-${variant}`, className]} rel={rel} target={target}>
   <span class="btn-label"><slot /></span>
-  <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+  {arrow && <span class="arrow" aria-hidden="true">&rarr;</span>}
 </a>
-
-<style>
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 0.7rem 1.1rem;
-    border-radius: 7px;
-    border: 1px solid transparent;
-    transition:
-      transform 0.16s var(--ease-out-expo),
-      background-color 0.16s ease,
-      border-color 0.16s ease,
-      color 0.16s ease,
-      box-shadow 0.16s ease;
-  }
-  .btn-arrow {
-    transition: transform 0.18s var(--ease-out-expo);
-  }
-  .btn:hover .btn-arrow {
-    transform: translateX(4px);
-  }
-
-  /* Primary — the single warm spark per page. */
-  .btn-primary {
-    background-color: var(--color-signal);
-    color: var(--color-ink);
-    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-signal) 50%, transparent);
-  }
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px -10px color-mix(in oklab, var(--color-signal) 70%, transparent);
-  }
-
-  /* Ghost — cool, interactive. */
-  .btn-ghost {
-    color: var(--color-data);
-    border-color: color-mix(in oklab, var(--color-data) 45%, var(--color-line));
-    background-color: transparent;
-  }
-  .btn-ghost:hover {
-    transform: translateY(-2px);
-    border-color: var(--color-data);
-    background-color: color-mix(in oklab, var(--color-data) 10%, transparent);
-  }
-
-  /* Text — inline link with a nudging arrow. */
-  .btn-text {
-    padding: 0;
-    color: var(--color-data);
-    border: 0;
-    border-radius: 0;
-  }
-  .btn-text:hover {
-    color: color-mix(in oklab, var(--color-data) 80%, white);
-  }
-</style>

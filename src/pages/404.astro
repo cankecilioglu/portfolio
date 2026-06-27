@@ -3,13 +3,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ArrowLink from '../components/ArrowLink.astro';
 ---
 
-<BaseLayout title="Signal lost" description="That page couldn't be found.">
+<BaseLayout title="Page not found" description="That page couldn't be found.">
   <section class="wrap nf">
-    <p class="nf-code">404</p>
-    <div class="nf-rule" aria-hidden="true"></div>
-    <h1 class="display-2 nf-title">Signal lost.</h1>
-    <p class="nf-copy">
-      No reading at this address — the estimate didn't converge. Let's get you back to known ground.
+    <p class="nf-code label label-accent">Error 404</p>
+    <h1 class="display-1 nf-title">Page not found.</h1>
+    <p class="lede nf-copy">
+      This address didn&rsquo;t resolve to anything. Let&rsquo;s get you back to solid ground.
     </p>
     <div class="nf-cta">
       <ArrowLink href="/" variant="primary">Back home</ArrowLink>
@@ -20,33 +19,13 @@ import ArrowLink from '../components/ArrowLink.astro';
 
 <style>
   .nf {
-    padding-block: clamp(4rem, 3rem + 8vw, 8rem);
-    max-width: 44rem;
+    padding-block: clamp(4rem, 3rem + 8vw, 9rem);
+    max-width: 46rem;
   }
-  .nf-code {
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    letter-spacing: 0.3em;
-    color: var(--color-signal);
-  }
-  .nf-rule {
-    margin: 1.25rem 0;
-    height: 3px;
-    width: 100%;
-    max-width: 16rem;
-    border-radius: 999px;
-    background: var(--heat);
-  }
-  .nf-title {
-    margin-bottom: 1rem;
-  }
-  .nf-copy {
-    color: var(--color-muted);
-    font-size: 1.0625rem;
-    max-width: 48ch;
-  }
+  .nf-title { margin-top: 1.25rem; }
+  .nf-copy { margin-top: 1.25rem; }
   .nf-cta {
-    margin-top: 2rem;
+    margin-top: 2.25rem;
     display: flex;
     flex-wrap: wrap;
     gap: 0.85rem;

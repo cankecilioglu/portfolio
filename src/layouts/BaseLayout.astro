@@ -1,11 +1,8 @@
 ---
 import '../styles/global.css';
 
-// Self-hosted fonts (Astro/Vite bundles + fingerprints these; served from our origin).
-import '@fontsource-variable/archivo/wght.css';
-import '@fontsource/ibm-plex-sans/400.css';
-import '@fontsource/ibm-plex-sans/500.css';
-import '@fontsource/ibm-plex-sans/600.css';
+// Main typeface is Helvetica (system stack — no download). Only the monospace
+// used for labels / code blocks is self-hosted.
 import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/500.css';
 import '@fontsource/ibm-plex-mono/600.css';
@@ -45,8 +42,8 @@ const { title, description, image, article } = Astro.props;
     left: 1rem;
     top: -4rem;
     z-index: 100;
-    background: var(--color-signal);
-    color: var(--color-ink);
+    background: var(--color-orange);
+    color: #fff;
     padding: 0.5rem 0.9rem;
     border-radius: 6px;
     font-family: var(--font-mono);
@@ -56,6 +53,5 @@ const { title, description, image, article } = Astro.props;
   }
   .skip-link:focus-visible {
     top: 1rem;
-    outline-offset: 2px;
   }
 </style>

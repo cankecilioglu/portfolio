@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Eyebrow from '../../components/Eyebrow.astro';
+import Badge from '../../components/Badge.astro';
 import TelemetrySidebar from '../../components/TelemetrySidebar.astro';
 import Figure from '../../components/Figure.astro';
 
@@ -32,22 +32,22 @@ const specs: Spec[] = [
 <BaseLayout title={d.title} description={d.summary} article={true}>
   <article>
     <section class="wrap proj-head reveal">
-      <a href="/work" class="back">&larr; all work</a>
-      <Eyebrow class="proj-eyebrow">{statusLabel}</Eyebrow>
-      <h1 class="display-1 proj-title">{d.title}</h1>
-      <p class="proj-summary">{d.summary}</p>
+      <a href="/work" class="back">&larr; All work</a>
+      <Badge class="proj-badge">{statusLabel}</Badge>
+      <h1 class="display-2 proj-title">{d.title}</h1>
+      <p class="lede proj-summary">{d.summary}</p>
     </section>
 
     {
       d.heroMedia && (
         <section class="wrap proj-hero reveal">
-          <Figure kind="video" accent="signal" ratio="16 / 8" caption={d.heroMedia} />
+          <Figure kind="video" ratio="16 / 8" caption={d.heroMedia} />
         </section>
       )
     }
 
     <div class="wrap proj-body">
-      <div class="proj-content prose">
+      <div class="proj-content prose reveal">
         <Content />
       </div>
       <div class="proj-aside">
@@ -65,50 +65,33 @@ const specs: Spec[] = [
     display: inline-block;
     margin-bottom: 1.5rem;
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--color-muted);
+    color: var(--muted);
     transition: color 0.15s ease;
   }
-  .back:hover {
-    color: var(--color-data);
-  }
-  .proj-eyebrow {
-    margin-bottom: 1rem;
-  }
-  .proj-title {
-    max-width: 20ch;
-  }
-  .proj-summary {
-    margin-top: 1.4rem;
-    max-width: 60ch;
-    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.2rem);
-    color: var(--color-muted);
-  }
+  .back:hover { color: var(--accent); }
+  .proj-badge { margin-bottom: 1.1rem; }
+  .proj-title { max-width: 20ch; }
+  .proj-summary { margin-top: 1.4rem; }
 
-  .proj-hero {
-    margin-top: clamp(2rem, 1.4rem + 2.5vw, 3rem);
-  }
+  .proj-hero { margin-top: clamp(2rem, 1.4rem + 2.5vw, 3rem); }
 
   .proj-body {
     margin-top: clamp(2rem, 1.4rem + 2.5vw, 3rem);
     display: grid;
     gap: 2.5rem;
     grid-template-columns: 1fr;
-    padding-bottom: 1rem;
+    padding-bottom: clamp(3.5rem, 2.5rem + 4vw, 6rem);
   }
-
   @media (min-width: 980px) {
     .proj-body {
       grid-template-columns: minmax(0, 1fr) 18rem;
       gap: 3.5rem;
       align-items: start;
     }
-    .proj-content {
-      grid-column: 1;
-      grid-row: 1;
-    }
+    .proj-content { grid-column: 1; grid-row: 1; }
     .proj-aside {
       grid-column: 2;
       grid-row: 1;

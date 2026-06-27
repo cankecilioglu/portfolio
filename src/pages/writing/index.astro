@@ -10,33 +10,34 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
 
 <BaseLayout
   title="Writing"
-  description="Ground Truth — notes from the sensor / state / meaning seam by Can Keçilioğlu. First dispatch: the rover deep-dive."
+  description="Notes on robotics, perception and embedded systems by Can Keçilioğlu."
 >
-  <section class="wrap page-head reveal">
-    <Eyebrow>writing</Eyebrow>
-    <h1 class="display-1 page-title">Ground Truth.</h1>
-    <p class="page-intro">
-      Notes from the part of robotics that's usually invisible — how a system perceives, what it
-      trusts, and where it quietly breaks.
-    </p>
+  <section class="wrap page-head">
+    <div class="reveal">
+      <Eyebrow>Writing</Eyebrow>
+      <h1 class="display-1 page-title">Notes &amp; write-ups.</h1>
+      <p class="lede page-intro">
+        Occasional writing on the parts of robotics that don&rsquo;t make the highlight reel — how
+        systems perceive, what they trust, and where they break.
+      </p>
+    </div>
   </section>
 
-  <section class="wrap writing-body reveal">
+  <section class="wrap writing-body">
     {
       posts.length === 0 ? (
-        <div class="empty">
-          <span class="empty-rule" aria-hidden="true" />
-          <p class="empty-status">// no dispatches yet</p>
+        <div class="empty reveal">
+          <p class="empty-status label label-accent">No posts yet</p>
           <p class="empty-copy">
-            The first post will be the rover deep-dive — the full path from a raw IMU reading to a
-            live slope/roughness heatmap. Until then, the case study lives in{' '}
+            First up: a write-up of the ground-analysis rover — the full path from a raw IMU reading
+            to a live slope/roughness map. Until then, the case study lives in{' '}
             <a href="/work/rover">Work</a>.
           </p>
         </div>
       ) : (
-        <ul class="post-list">
+        <ul class="post-list reveal">
           {posts.map((post) => (
-            <li class="post">
+            <li>
               <a href={`/writing/${post.id}`} class="post-link">
                 <time class="post-date" datetime={post.data.pubDate.toISOString()}>
                   {post.data.pubDate.toLocaleDateString('en-US', {
@@ -58,42 +59,26 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
 
 <style>
   .writing-body {
+    padding-bottom: clamp(4rem, 2.5rem + 6vw, 7rem);
     margin-top: clamp(2rem, 1.4rem + 3vw, 3.25rem);
   }
-
   .empty {
-    position: relative;
     max-width: 46rem;
-    border: 1px solid var(--color-line);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
-    background-color: var(--color-surface);
+    background-color: var(--card);
     padding: clamp(1.5rem, 1.1rem + 2vw, 2.5rem);
-    overflow: hidden;
-  }
-  .empty-rule {
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 3px;
-    background: var(--heat);
-  }
-  .empty-status {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-data);
   }
   .empty-copy {
     margin-top: 0.75rem;
-    color: var(--color-muted);
+    color: var(--muted);
     line-height: 1.7;
   }
   .empty-copy a {
-    color: var(--color-data);
+    color: var(--accent);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
-
   .post-list {
     list-style: none;
     margin: 0;
@@ -104,26 +89,22 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
   .post-link {
     display: grid;
     gap: 0.3rem;
-    padding: 1.1rem 0;
-    border-bottom: 1px solid var(--color-line);
+    padding: 1.2rem 0;
+    border-bottom: 1px solid var(--line);
   }
   .post-date {
     font-family: var(--font-mono);
     font-size: 0.72rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-muted);
+    color: var(--muted);
   }
   .post-title {
-    font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.25rem;
-    color: var(--color-text);
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+    color: var(--fg);
   }
-  .post-desc {
-    color: var(--color-muted);
-  }
-  .post-link:hover .post-title {
-    color: var(--color-data);
-  }
+  .post-desc { color: var(--muted); }
+  .post-link:hover .post-title { color: var(--accent); }
 </style>
