@@ -185,27 +185,28 @@
   .badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
     font-family: var(--font-mono);
     font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--accent);
-    padding: 0.35rem 0.7rem;
+    padding: 0.45rem 0.9rem;
     border: 1px solid color-mix(in oklab, var(--accent) 45%, transparent);
     border-radius: 999px;
     background: color-mix(in oklab, var(--accent) 10%, transparent);
   }
   .badge-dot {
-    width: 0.45rem;
-    height: 0.45rem;
+    flex: none;
+    width: 0.4rem;
+    height: 0.4rem;
     border-radius: 999px;
     background: var(--accent);
-    box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 70%, transparent);
+    box-shadow: 0 0 7px color-mix(in oklab, var(--accent) 60%, transparent);
   }
   @media (prefers-reduced-motion: no-preference) {
-    .badge-dot { animation: pulse-dot 2.4s ease-out infinite; }
+    .badge-dot { animation: pulse-dot 2.2s ease-in-out infinite; }
   }
 
   /* Buttons. */
@@ -346,9 +347,8 @@
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes pulse-dot {
-  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 65%, transparent); }
-  70% { box-shadow: 0 0 0 7px transparent; }
-  100% { box-shadow: 0 0 0 0 transparent; }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 @keyframes caret-blink {
   0%, 45% { opacity: 1; }
