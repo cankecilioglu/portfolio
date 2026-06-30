@@ -1,26 +1,26 @@
 ---
 title: Split-flap display
 summary: >-
-  A from-scratch mechatronic build. The hard part isn't the look — it's making an
+  A from-scratch mechatronic build. The hard part isn't the look. It's making an
   open-loop stepper behave like a closed-loop system: re-homing every move via a
   Hall sensor, per-unit EEPROM calibration, custom firmware.
 status: in-progress
 order: 2
 year: 2025
-role: Solo build — mechanical, electronics, firmware
+role: 'Solo build: mechanical, electronics, firmware'
 stack:
   - Steppers
   - Hall sensor
   - EEPROM
   - Custom firmware
   - C/C++
-heroMedia: Split-flap unit — closed-loop homing
+heroMedia: 'Split-flap unit: closed-loop homing'
 ---
 
 import Figure from '../../components/Figure.astro';
 
 A from-scratch mechatronic build. The interesting engineering here isn't the
-split-flap *look* — it's making an open-loop stepper behave like a closed-loop
+split-flap *look*. It's making an open-loop stepper behave like a closed-loop
 system without the cost of a closed-loop motor.
 
 ## The real problem
@@ -33,16 +33,16 @@ truth on every move.
   the unit finds a known zero before counting steps to its target.
 - **Per-unit EEPROM offset calibration**, because no two assembled units land on
   exactly the same mechanical zero.
-- **Firmware tuned for reliable positioning** — acceleration profiles that don't
+- **Firmware tuned for reliable positioning**: acceleration profiles that don't
   skip steps and don't take all day.
 
 <Figure
   kind="video"
-  caption="A single unit homing and landing on a target character — the closed-loop behaviour in miniature."
+  caption="A single unit homing and landing on a target character, the closed-loop behaviour in miniature."
 />
 
 ## Status
 
-In progress. A kit version is in the works — a clean, calibrated unit you can
+In progress. A kit version is in the works, a clean, calibrated unit you can
 build yourself. No sales push during the credibility phase; if you want a heads-up
 when it's ready, the best move is to <a href="/contact">get in touch</a>.

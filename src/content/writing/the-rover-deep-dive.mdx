@@ -1,31 +1,169 @@
 ---
-title: 'From raw sensor to world model: inside the rover'
+title: 'From raw sensor to world model: building the rover twice'
 description: >-
-  The first Ground Truth dispatch — the full path from a noisy IMU reading on
-  bare metal to a live slope/roughness heatmap.
-pubDate: 2026-06-27
-draft: true
+  The full story of an embedded-systems course project: a road-surface inspection
+  robot built first in simulation, then on real hardware, and everything that
+  broke along the way.
+pubDate: 2026-06-30
+draft: false
 ---
 
-> This is a **draft template** for the first Ground Truth post. It won't appear on
-> the site until you remove `draft: true` from the frontmatter above. Use it as the
-> long-form companion to the [rover case study](/work/rover).
+import Figure from '../../components/Figure.astro';
 
-## Why proprioceptive terrain analysis
+export const _imgs = import.meta.glob('../../assets/rover/*.{jpg,jpeg,png,webp}', { eager: true, import: 'default' });
+export const img = (n) => _imgs[`../../assets/rover/${n}`];
 
-_Start here: the one-paragraph version of why measuring what the ground does to the
-robot beats looking at it._
+This is the long-form companion to the [rover case study](/work/rover). The case
+study is the clean version: sensor to state to meaning, two working systems, here
+is what I owned. This is the messy version, the one with the brownouts and the
+copy-paste bug and the simulated robot that kept flipping onto its back. It is
+worth telling because the mess is where the actual engineering happened.
 
-## The estimator nobody sees
+## The brief
 
-_The EKF section — what it fuses, why timestamps are everything, and what
-convergence actually feels like._
+The project was for **INF 208, Embedded Systems**, a course where five of us had to
+ship something real: a German technical report, a public GitHub repo, a short
+video, and a working demo. The hard constraint was that the system had to use at
+least two sensors feeding a genuine logical decision algorithm. No decision
+algorithm, minus fifty points. That single rule shaped everything that followed.
 
-## Turning state into a map
+We picked a smart-city problem to hang it on. Cities find potholes and broken
+pavement with expensive survey vehicles or by sending people out with clipboards.
+The idea: a cheap mobile robot that drives a surface, feels what the ground does to
+it, and tags every defect with a GPS coordinate. Two sensors fell out naturally, an
+IMU for vertical acceleration and tilt, a GPS for position, and the decision
+algorithm classified each patch of ground as flat, bump, or pothole.
 
-_How orientation + high-frequency IMU content become slope and roughness, written
-into a spatial field._
+## Why we built it twice
 
----
+We ended up with two parallel systems, and that was a choice, not an accident.
 
-_Draft. Replace these stubs with the real write-up, then flip `draft` to `false`._
+A physical robot proves you can survive real noise, real wiring, and a GPS that
+refuses to get a fix indoors. But the ambitious perception, a proper EKF fusing
+IMU and GPS, a live slope and roughness map, is exactly the kind of thing you do
+not want to debug for the first time while also fighting a power supply. So the
+**simulation came first**, as the place to get the algorithms right, and the
+**hardware came second**, as the place to prove they hold up when reality pushes
+back.
+
+## Part one: the simulation
+
+The digital twin lives in ROS 2 Jazzy and Gazebo Harmonic, modelled on the kit we
+were about to build: a small four-wheel skid-steer chassis. We brought it up in
+phases, plain driving first, then sensors, then the perception stack on top.
+
+The honest surprise was that **the hardest part was physics, not perception**.
+Skid-steer robots turn by dragging their wheels sideways, and a naive friction
+model in simulation makes them want to flip onto their backs the moment they turn.
+We spent real time on this, working through friction models and even switching the
+underlying physics engine, before the robot would just drive across rough terrain
+like a robot instead of a stunt car.
+
+Once it drove, the perception came together fast. A dual-EKF setup from
+`robot_localization` fuses the fast IMU with the slow GPS into one state estimate.
+On top of that, a mapping node turns state into meaning: it reads the gravity
+direction to get slope, isolates the high-frequency vertical shake to get
+roughness, and writes both into a grid where every cell remembers the *worst* it
+felt there, so a single sharp pothole never gets averaged away.
+
+<Figure
+  kind="rviz capture"
+  caption="The slope / roughness heatmap building up in RViz as the simulated rover crosses terrain."
+/>
+
+By the end it was a single launch command: simulation, controller, localization,
+mapping, and visualization, all up at once, with a service to save the finished map
+to disk. That is the version that lives on [GitHub](https://github.com/cankecilioglu/rover_ws).
+
+## Part two: the hardware
+
+Then we had to make it real, and reality had opinions.
+
+### The first version worked, and was wrong
+
+The very first physical build was an ESP32 with its own Wi-Fi access point serving
+a little control web page. It drove. It also was not part of any robotics
+ecosystem, which meant none of the simulation's tooling could ever touch it. So we
+threw the architecture away and migrated the ESP32 to **micro-ROS**, turning it
+into a ROS 2 client bridged to the Pi over USB serial through a Docker agent. That
+single decision is what made the physical robot and the simulation speak the same
+language.
+
+<Figure
+  src={img('dashboard-camera.jpg')}
+  alt="Dashboard connected over micro-ROS, showing the live camera feed pointed at the rover internals"
+  kind="photo: dashboard + camera"
+  caption="After the migration: the same dashboard, now talking to the ESP32 through micro-ROS, with the live camera feed up."
+/>
+
+<Figure
+  src={img('lab-bringup.jpg')}
+  alt="Lab scene with the physical rover wired to a laptop running the dashboard"
+  kind="photo: lab bring-up"
+  caption="Bring-up in the lab: the physical rover wired to the Pi, dashboard live on the laptop."
+/>
+
+### The bug that cost an evening
+
+The migration brought a genuinely stupid, genuinely instructive bug. ROS message
+types in C have double underscores in their names, like `sensor_msgs__msg__Imu`.
+When you copy firmware between a chat window and an editor, some tools silently
+collapse those double underscores into single ones. Every build failed with
+cryptic type errors, and the code *looked* correct. The fix was humbling: stop
+pasting code through things that rewrite it, keep it in a real file. I think about
+that one every time a build fails for "no reason."
+
+### The brownout saga
+
+The robot would not stay alive under load. The moment the motors drew current, the
+whole thing reset. This was not a software bug at all, it was power and grounding:
+thin shared-ground wiring and a split 5 V supply meant the motor surge dragged the
+logic rail down with it.
+
+The fix was textbook embedded design once we stopped treating power as plumbing:
+one **star-point ground** so the ESP32 and the motor driver share a clean
+reference, thick short leads, a separate clean rail for the sensors so their
+regulators stay out of dropout, and the camera and ESP32 fed from a single 5 V
+domain so nothing back-feeds anything else. After that it just ran.
+
+### GPS does not love being indoors
+
+A NEO-6M GPS module under a lab roof is a sad device. A cold start with no clear
+sky view takes minutes, and for a while we thought the module was broken. It was
+not, it just needed open sky and patience. We added a live satellite count to the
+dashboard so we could *see* the fix being earned instead of guessing, and the first
+time the marker snapped onto our actual coordinates on campus was one of the better
+moments of the project.
+
+<Figure
+  src={img('dashboard-fix.jpg')}
+  alt="Dashboard with a live GPS fix, telemetry and a Leaflet map marker on campus"
+  kind="photo: dashboard with fix"
+  caption="The dashboard once the GPS finally locked on: live fix, telemetry, camera, and the map dropping a marker where we actually were."
+/>
+
+### Smaller cuts
+
+There were others, each its own little lesson. The camera stream kept dying with
+I/O errors until we realised the resolution we asked for simply did not fit through
+the USB bandwidth, so we dropped it. The I2C bus could lock the whole loop if the
+IMU was missing, so we made the firmware degrade gracefully and keep going without
+it. None of these are glamorous. All of them are the difference between a demo that
+works once and a system you can hand someone.
+
+## What I actually learned
+
+Three things stuck, beyond the specific fixes:
+
+1. **Split hard real-time from heavy compute.** The ESP32 owns microsecond timing,
+   the Pi owns everything that wants an operating system. That one boundary made
+   both halves simpler.
+2. **Power and grounding are the platform, not a detail.** More of our "software"
+   problems turned out to be electrical than I expected going in.
+3. **Document the failures.** The engineering log of what broke and how we fixed it
+   ended up being the strongest part of the writeup, because it is the part that
+   actually proves we learned something. Anyone can show a robot that drives. The
+   value is in knowing exactly why it did not, right up until it did.
+
+If you want the architecture and the numbers, the [case study](/work/rover) lays
+them out cleanly. This was the story underneath them.

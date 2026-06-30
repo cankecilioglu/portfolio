@@ -1,40 +1,153 @@
 ---
 /**
- * Telemetry-styled media frame — on-brand placeholder for assets not in yet
- * (heatmap clip, architecture diagram, RViz capture). Swap for <img>/<video>.
+ * Telemetry-styled media frame. With `src` (an imported image) it renders the
+ * real asset inside an on-brand, matted frame with a header bar and caption;
+ * without one it falls back to a labelled placeholder. All figures share one
+ * standard aspect ratio so they line up as a consistent photo strip.
  */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
 interface Props {
   kind?: string;
   caption?: string;
+  /** Frame aspect ratio. Defaults to the site-standard 4 / 3 for uniform sizing. */
   ratio?: string;
+  /** Imported image. When set, the real asset replaces the placeholder. */
+  src?: ImageMetadata;
+  /** Alt text for the image (required when `src` is set). */
+  alt?: string;
+  /** How the image fills the frame. `cover` crops to fill, `contain` letterboxes. */
+  fit?: 'cover' | 'contain';
+  /** CSS object-position to steer the crop (e.g. "center 72%"). */
+  position?: string;
+  /** Opt out of the compact width cap (used for the wide hero banner). */
+  wide?: boolean;
 }
-const { kind = 'media', caption, ratio = '16 / 9' } = Astro.props;
+const {
+  kind = 'media',
+  caption,
+  ratio = '4 / 3',
+  src,
+  alt = '',
+  fit = 'cover',
+  position = 'center',
+  wide = false,
+} = Astro.props;
+
+// Tall (portrait) frames get a narrower cap so they don't dominate vertically.
+const [rw, rh] = ratio.split('/').map((s) => parseFloat(s.trim()));
+const isPortrait = Number.isFinite(rw) && Number.isFinite(rh) && rh > rw;
+const frameClass = ['media-frame', wide && 'is-wide', isPortrait && 'is-portrait']
+  .filter(Boolean)
+  .join(' ');
 ---
 
-<figure class="media-frame">
-  <div class="media-box" style={`aspect-ratio:${ratio}`}>
-    <span class="media-corner tl" aria-hidden="true"></span>
-    <span class="media-corner tr" aria-hidden="true"></span>
-    <span class="media-corner bl" aria-hidden="true"></span>
-    <span class="media-corner br" aria-hidden="true"></span>
-    <span class="media-kind">{kind}</span>
-    <span class="media-hint">asset placeholder</span>
+<figure class={frameClass}>
+  <div class={`media-shell${src ? ' has-image' : ''}`}>
+    <div class="media-bar" aria-hidden="true">
+      <span class="media-bar-dot"></span>
+      <span class="media-bar-tag">{kind}</span>
+      <span class="media-bar-status">{src ? 'photo' : 'pending'}</span>
+    </div>
+    <div class="media-box" style={`aspect-ratio:${ratio}`}>
+      {src ? (
+        <Image
+          src={src}
+          alt={alt}
+          class="media-img"
+          style={`object-fit:${fit};object-position:${position}`}
+        />
+      ) : (
+        <>
+          <span class="media-kind">{kind}</span>
+          <span class="media-hint">asset placeholder</span>
+        </>
+      )}
+      <span class="media-corner tl" aria-hidden="true"></span>
+      <span class="media-corner tr" aria-hidden="true"></span>
+      <span class="media-corner bl" aria-hidden="true"></span>
+      <span class="media-corner br" aria-hidden="true"></span>
+    </div>
   </div>
   {caption && <figcaption class="media-cap">{caption}</figcaption>}
 </figure>
 
 <style>
   .media-frame {
-    margin: 2rem 0;
+    /* Capped but left-aligned with the text, not centered, to stay in line. */
+    max-width: 38rem;
+    margin: 2.4rem 0;
   }
+  /* Portrait frames are taller, so cap them narrower to match the visual footprint. */
+  .media-frame.is-portrait {
+    max-width: 23rem;
+  }
+  /* The hero banner keeps a wider footprint. */
+  .media-frame.is-wide {
+    max-width: none;
+  }
+
+  /* Outer frame: a matted panel that reads as a deliberate media block. */
+  .media-shell {
+    padding: 0.55rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background-color: var(--card);
+    box-shadow:
+      0 1px 0 color-mix(in oklab, var(--line) 50%, transparent),
+      0 10px 30px -24px rgba(0, 0, 0, 0.7);
+    transition:
+      border-color 0.25s var(--ease-out-expo, ease),
+      transform 0.25s var(--ease-out-expo, ease);
+  }
+  .media-shell.has-image:hover {
+    border-color: color-mix(in oklab, var(--accent) 45%, var(--line));
+  }
+
+  /* Header bar: labels the block and signals the photo section. */
+  .media-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.1rem 0.3rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .media-bar-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent);
+    flex: none;
+  }
+  .media-bar-tag {
+    color: var(--accent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .media-bar-status {
+    margin-left: auto;
+    padding: 0.1rem 0.45rem;
+    border: 1px solid color-mix(in oklab, var(--line) 80%, transparent);
+    border-radius: 999px;
+    font-size: 0.58rem;
+    color: var(--muted);
+    flex: none;
+  }
+
   .media-box {
     position: relative;
     display: grid;
     place-content: center;
     gap: 0.4rem;
     width: 100%;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
+    border-radius: calc(var(--radius) - 4px);
     background-color: var(--card);
     background-image:
       linear-gradient(to right, color-mix(in oklab, var(--line) 60%, transparent) 1px, transparent 1px),
@@ -43,6 +156,22 @@ const { kind = 'media', caption, ratio = '16 / 9' } = Astro.props;
     text-align: center;
     overflow: hidden;
   }
+  /* Image mode: solid warm-black mat, no grid, image fills the box. */
+  .has-image .media-box {
+    place-content: stretch;
+    background-color: #100f0d;
+    background-image: none;
+  }
+  .media-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transition: transform 0.4s var(--ease-out-expo, ease);
+  }
+  .media-shell.has-image:hover .media-img {
+    transform: scale(1.02);
+  }
+
   .media-kind {
     font-family: var(--font-mono);
     font-size: 0.8rem;
@@ -57,21 +186,32 @@ const { kind = 'media', caption, ratio = '16 / 9' } = Astro.props;
     text-transform: uppercase;
     color: var(--muted);
   }
+
+  /* Corner ticks read as a viewfinder over the image. */
   .media-corner {
     position: absolute;
     width: 12px;
     height: 12px;
     border: 1px solid color-mix(in oklab, var(--muted) 55%, transparent);
+    pointer-events: none;
+  }
+  .has-image .media-corner {
+    border-color: color-mix(in oklab, #fff 65%, transparent);
+    mix-blend-mode: overlay;
   }
   .media-corner.tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
   .media-corner.tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
   .media-corner.bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
   .media-corner.br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+
   .media-cap {
-    margin-top: 0.7rem;
+    margin-top: 0.85rem;
+    padding-left: 0.7rem;
+    border-left: 2px solid var(--accent);
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    letter-spacing: 0.05em;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
     color: var(--muted);
   }
 </style>

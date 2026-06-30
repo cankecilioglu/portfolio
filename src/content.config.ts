@@ -2,7 +2,7 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 /**
- * Work — project case studies (MDX). The rover deep-dive is the centerpiece;
+ * Work: project case studies (MDX). The rover deep-dive is the centerpiece;
  * split-flap is an in-progress teaser. Ordered by `order` (lower = first).
  */
 const work = defineCollection({
@@ -24,7 +24,7 @@ const work = defineCollection({
 });
 
 /**
- * Writing — the blog. Empty for now; the first post will be the rover article.
+ * Writing: the blog. The first post is the rover deep-dive.
  */
 const writing = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/writing' }),

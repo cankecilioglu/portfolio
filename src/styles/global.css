@@ -1,10 +1,10 @@
 @import 'tailwindcss';
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Palette — warm black · beige · orange. Helvetica-led, Swiss-flavoured.
+   Palette: warm black · beige · orange. Helvetica-led, Swiss-flavoured.
    ────────────────────────────────────────────────────────────────────────── */
 @theme {
-  --color-ink: #0f0e0c; /* primary background — warm near-black */
+  --color-ink: #0f0e0c; /* primary background, warm near-black */
   --color-surface: #181613; /* dark cards / raised panels */
   --color-surface-2: #211d18; /* dark hover / nested */
   --color-beige: #ece4d3; /* light section background */
@@ -17,7 +17,7 @@
   --color-line-d: #29241e; /* hairlines on dark */
   --color-line-l: #d9cdb6; /* hairlines on light */
 
-  --color-orange: #ff6a1a; /* the single accent — CTAs, links, active */
+  --color-orange: #ff6a1a; /* the single accent: CTAs, links, active */
   --color-orange-deep: #ea5b0c;
 
   --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -26,7 +26,7 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Adaptive section variables — components read these so they flip automatically
+/* Adaptive section variables: components read these so they flip automatically
    between dark and light (beige) sections. Defaults below are the DARK theme. */
 :root {
   --bg: var(--color-ink);
@@ -144,7 +144,7 @@
     padding-block: clamp(3rem, 2rem + 4vw, 5rem);
   }
 
-  /* Display scale — Helvetica, heavy, tight. */
+  /* Display scale: Helvetica, heavy, tight. */
   .display-1 {
     font-weight: 800;
     letter-spacing: -0.04em;
@@ -340,7 +340,7 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Motion — kept restrained.
+   Motion, kept restrained.
    ────────────────────────────────────────────────────────────────────────── */
 @keyframes reveal {
   from { opacity: 0; transform: translateY(1.5rem); }
