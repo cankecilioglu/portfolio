@@ -1,0 +1,204 @@
+---
+title: 'EV telemetry: what the battery is really doing'
+summary: >-
+  Estimating the signed battery current of an electric car from nine drivers'
+  telemetry: sentinel-aware cleaning, a calibrated longitudinal power balance,
+  a Random Forest, and a mean baseline compared on a time-ordered split.
+status: flagship
+order: 3
+year: 2026
+role: 'Individual project · Python for Engineers (TGU)'
+stack:
+  - Python
+  - pandas
+  - scikit-learn
+  - Physics modelling
+  - Matplotlib
+  - pytest
+repo: https://github.com/cankecilioglu/ev-telemetry-project
+repoLabel: cankecilioglu/ev-telemetry-project
+---
+
+import Figure from '../../components/Figure.astro';
+
+export const _imgs = import.meta.glob('../../assets/ev/*.{png,jpg,jpeg,webp}', {
+  eager: true,
+  import: 'default',
+});
+export const img = (n) => _imgs[`../../assets/ev/${n}`];
+
+A battery current reading is two measurements in one sign. Positive means the
+pack is supplying power; negative means the car is recovering energy while it
+brakes or coasts. That single signed number is what a range estimate, a thermal
+model or an energy dashboard actually needs, and it is what this project
+estimates from signals available **at the same instant**: speed, acceleration,
+pedal travel, road grade, and the ECO / air-conditioning states.
+
+It began as the term project for *Python for Engineers* at the Turkish-German
+University. The brief was open-ended, so I treated it as a small engineering
+study rather than a plot collection: clean the data honestly, state a physical
+model with its assumptions, compare it with a learned model and a mean baseline,
+and analyse where each one fails.
+
+## The question, stated precisely
+
+Can `CUR` — battery current in ampere, signed, including regenerative braking —
+be estimated from simultaneous vehicle signals only? Not forecast: every feature
+is measured at the same timestamp as the target. The test set is the **latest
+20 % of the recorded time**, so the score measures performance on unseen drivers
+and an unseen day.
+
+That choice matters. A random split would let the model memorise the route and
+the driver, and it would look far better than it is.
+
+## The data are not clean, and that is part of the story
+
+The dataset is public: nine trips over the same ~76 km route in Brazil, October
+2023, 24,277 rows at roughly 2 s sampling. It is also messier than its
+description suggests:
+
+<Figure
+  src={img('voltage-quality.png')}
+  alt="Pack voltage per trip: seven trips show values near zero to 25 V, while trips 7 and 8 show a plausible 300 to 380 V signal"
+  kind="pack voltage quality"
+  ratio="16 / 10"
+  caption="Pack voltage per trip. Seven of nine trips carry a corrupted signal near 0–25 V; only trips 7 and 8 are usable. The rows are flagged, not deleted."
+/>
+
+- **The file is shuffled.** Rows from all trips are interleaved; sorting per trip is the first operation.
+- **97 timestamps cannot be trusted.** Impossible components (month 49, hour 83) or stamps contradicting the recording order are dropped, because there is no honest way to place them in time.
+- **Corrupt channels are flagged, not deleted.** Pack voltage is outside 250–420 V on 18,049 rows; altitude has four zero sentinels; 21 GPS fixes fall outside Brazil. Those rows still carry valid speed and current, so they stay, with `vol_valid`, `alt_missing` and `gps_valid` flags.
+- **The accelerometer is unusable as acceleration.** `AX` has a per-trip offset between −0.1 and +3.1 m/s² and correlates with differentiated speed at only r = 0.14. The pipeline uses `dSPD/dt` instead, and documents why.
+
+The cleaning report is generated, not hand-written: every count in the project
+comes from the same code path that produced the figures.
+
+## A physical model first
+
+The reference model is a longitudinal power balance at the pack:
+
+```text
+I = [ m·a·v + ½·ρ·C_d·A·v³ + m·g·sin(θ)·v + C_rr·m·g·v ] / (η·V_nom)
+    + (P_base + P_air·AIR) / V_nom
+```
+
+Dividing by the nominal pack voltage makes the equation **linear in six
+coefficients** — apparent mass, aerodynamic drag, grade force, rolling
+resistance, base load and air-conditioning load — so it can be calibrated by
+ordinary least squares on the training rows alone. Grade comes from altitude and
+odometer over a trailing ~30 s window; it is causal, not a centred smoothing.
+
+The fitted coefficients are converted back into engineering quantities, which is
+where the model earns or loses trust. Two independent estimates of vehicle mass
+— one from traction, one from grade — agree within 10 % (873 kg and 959 kg). Both
+sit about 40 % below the published 1,535 kg kerb mass, most plausibly because a
+2 s finite difference smooths acceleration peaks and one efficiency cannot
+describe traction and regeneration at once. That is a reported limitation, not a
+number I tuned away.
+
+## Then a learned model, and a baseline that keeps everyone honest
+
+Four methods are scored on the same held-out rows. The Random Forest is tuned
+with time-series cross-validation **inside the training set**; no test row
+influences the imputer or the hyper-parameters. The optional linear regression
+on speed and acceleration is the simple reference the brief allowed.
+
+| Model | Test MAE | RMSE | Bias | R² |
+| --- | --- | --- | --- | --- |
+| Training mean (baseline) | 40.35 A | 54.58 | −2.84 | −0.003 |
+| Linear: speed + acceleration | 31.96 A | 43.94 | −2.62 | 0.350 |
+| Calibrated physics | 25.03 A | 36.05 | −0.47 | 0.562 |
+| Random Forest | **5.43 A** | 9.43 | −0.47 | 0.970 |
+
+<Figure
+  src={img('model-comparison.png')}
+  alt="Horizontal bar chart of test MAE: baseline 40.3 A, linear 32.0 A, physics 25.0 A, random forest 5.4 A"
+  kind="test MAE"
+  ratio="16 / 9"
+  caption="Test MAE on 4,836 held-out rows. The forest wins by a wide margin — and the next two figures explain why that margin is real but not free."
+/>
+
+The gap has a clear cause. The accelerator pedal alone correlates with current
+at r = +0.91, and 90 % of the forest's feature importance lands on `ACC`. The
+forest is, to a large extent, a learned pedal-to-current map of this particular
+vehicle. That is a legitimate simultaneous signal, but it is also why the
+physics model is the one that would transfer to another EV, while the forest is
+tied to this pedal calibration.
+
+<Figure
+  src={img('pedal-response.png')}
+  alt="Two hexbin panels: accelerator travel versus current shows a strong positive relationship, brake travel versus current is mostly at zero brake with scattered negative and positive points"
+  kind="pedal response"
+  ratio="16 / 10"
+  caption="All nine trips: accelerator travel versus signed current (r = +0.91) and brake travel. Regeneration shows up as negative current while the brake is pressed or both pedals are released."
+/>
+
+## Where the errors live
+
+<Figure
+  src={img('error-analysis.png')}
+  alt="Two panels: MAE by speed band grows for baseline, linear and physics but stays low for random forest; MAE by operating regime is lowest while braking"
+  kind="error analysis"
+  ratio="16 / 9"
+  caption="Residuals on the test set. The mean baseline is badly biased above 80 km/h; the physics error grows with speed; the forest stays between 2.6 and 7.4 A in every speed band."
+/>
+
+The pattern is informative rather than decorative:
+
+- The **baseline** has a −36 A bias above 80 km/h and −29 A uphill. It predicts
+  the average of a mostly low-demand dataset and cannot follow demand.
+- The **physics model** is best while braking (14.6 A), where the recovery term
+  is proportional to speed and dominates, and worst above 80 km/h (39–45 A),
+  where aerodynamic and efficiency assumptions matter most.
+- The **forest** stays between 3.9 A (braking) and 6.5 A (coasting) per regime.
+  Its largest remaining bias is about −3.5 A at 80–100 km/h.
+
+A second split holds out the last 20 % of *every* trip, putting all nine drivers
+in the test set. The ranking does not change (forest 6.2 A, physics 27.2 A,
+linear 33.2 A, baseline 38.5 A), so the result is not an artefact of which trips
+happen to fall after the global cut.
+
+## The ECO-mode trap
+
+Trip 4 switches economy mode on and off four times: same car, same route, same
+driver. The raw numbers look like a clean result — and they are wrong. ECO-on
+windows also contain twice the accelerator pedal (27 % versus 12 %) and sit on
+slightly uphill sections (+2.2 % versus −1.2 % grade). Raw current is therefore
+*higher* with ECO on: 49.5 A versus 19.7 A.
+
+<Figure
+  src={img('eco-matched.png')}
+  alt="Left: current trace of trip 4 with shaded ECO-active windows. Right: bar chart of current change at matched speed and pedal, between minus 34 and minus 16 amperes in every speed band"
+  kind="ECO experiment"
+  ratio="16 / 9"
+  caption="Raw trace on the left; matched comparison on the right. Holding speed band and accelerator-pedal quintile fixed reverses the sign: ECO-on current is 16–34 A lower, about −20 A overall."
+/>
+
+Comparing only samples in the same speed band **and** the same pedal quintile
+reverses the sign: ECO-on is 16–34 A lower in every band, with a matched average
+of −20 A (a regression that also controls for grade gives ≈ −15 A). The mode
+does save current; the raw comparison was measuring the driver's right foot.
+
+That reframing is the part of the project I would keep in any future analysis.
+Observational data rarely gives you a clean experiment, and matching is often
+the difference between a finding and a plausible-looking artefact.
+
+## What I would change next
+
+- **More drivers and more days.** The global test set is two drivers on one day;
+  the per-trip check mitigates but does not remove that limitation.
+- **Separate charge and discharge efficiencies**, and a shorter acceleration
+  window, to see whether the fitted mass moves toward the published kerb mass.
+- **A transfer test.** Train the pedal map on one vehicle and apply it to
+  another; my expectation is that the physics model degrades gracefully and the
+  forest does not.
+- **A proper state-of-charge model.** Current integrates to charge, so the
+  natural next step is a small battery model rather than a single-step estimate.
+
+The code, the executed notebook, the data-quality report and all figures are in
+the repository. The raw dataset is GPL-3.0 and is not redistributed; the pipeline
+downloads it from Kaggle and rebuilds everything else.
+
+<p>
+  <a href="https://github.com/cankecilioglu/ev-telemetry-project">Code and notebook on GitHub &rarr;</a>
+</p>
